@@ -39,6 +39,29 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;overf
   background-size:48px 48px;
   animation:gridMov 20s linear infinite}
 @keyframes gridMov{0%{background-position:0 0}100%{background-position:48px 48px}}
+
+/* ===== FLOATING PARTICLES ===== */
+.particles-wrap{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.particle{position:absolute;border-radius:50%;opacity:0;animation:particleFloat linear infinite;}
+@keyframes particleFloat{
+  0%{transform:translateY(100vh) scale(0);opacity:0;}
+  10%{opacity:.6;}
+  90%{opacity:.3;}
+  100%{transform:translateY(-100px) scale(1.2);opacity:0;}
+}
+/* Pulse rings */
+.pulse-ring{position:absolute;border-radius:50%;animation:pulseRing ease-out infinite;}
+@keyframes pulseRing{
+  0%{transform:scale(.3);opacity:.5;}
+  100%{transform:scale(3);opacity:0;}
+}
+/* Chain links */
+.chain-line{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(139,105,20,.3),transparent);animation:chainMove linear infinite;}
+@keyframes chainMove{
+  0%{transform:translateX(-100%);opacity:0;}
+  50%{opacity:1;}
+  100%{transform:translateX(200%);opacity:0;}
+}
 [data-theme=dark] .bgr{background-image:linear-gradient(rgba(240,235,224,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(240,235,224,.08) 1px,transparent 1px)}
 
 .bgl{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
@@ -753,7 +776,7 @@ footer{border-top:1px solid var(--bd2);padding:1.5rem;
 .pgeload{position:fixed;inset:0;z-index:9000;background:var(--bg);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;
   transition:opacity .5s}
-.pgeload.hide{opacity:0;pointer-events:none}
+.pgeload.hide{opacity:0;pointer-events:none;visibility:hidden}
 .ldlogo{width:60px;height:60px;border-radius:16px;background:var(--grd);
   display:flex;align-items:center;justify-content:center;font-size:1.8rem;
   box-shadow:0 0 32px rgba(26,26,26,.35);animation:ldpulse 1.5s infinite}
@@ -970,6 +993,71 @@ footer{border-top:1px solid var(--bd2);padding:1.5rem;
 .sw-pct:hover{border-color:var(--c1);color:var(--t1);background:var(--card2);}
 .sw-pct-max{background:var(--grd);color:var(--grd-text);border-color:transparent;font-weight:700;}
 .sw-pct-max:hover{opacity:.85;color:var(--grd-text);}
+
+/* ===== MOBILE RESPONSIVE FIXES ===== */
+@media(max-width:768px){
+  .main{padding:.6rem .6rem 3.5rem!important;}
+  .sec{padding:.9rem .8rem!important;}
+  .sech{flex-direction:column;gap:.4rem;}
+  .aiwrap{flex-direction:column;}
+  .aichat{border-radius:14px 14px 0 0;}
+  .aiinprow{flex-direction:row;padding:.5rem .7rem;}
+  .aiinp{font-size:.8rem;}
+  .lbr{flex-wrap:wrap;gap:.4rem;}
+  .lbr>div:last-child{min-width:unset;}
+  .pfst{grid-template-columns:1fr 1fr!important;}
+  .tokbox{border-radius:12px!important;}
+  .tbb{flex-direction:row!important;}
+  .tbinp{font-size:.9rem!important;}
+  .swbtnm{font-size:.8rem!important;}
+  .disc-msgs{max-height:45vh!important;}
+  .setwrap{padding:0!important;}
+  .betpan{border-radius:12px!important;}
+  .blr{flex-direction:column;gap:.4rem;}
+  .clmbtn{width:100%;}
+  .tokpairs{gap:.3rem!important;}
+  .tokpair{font-size:.65rem!important;padding:.25rem .6rem!important;}
+  #socialBar{padding:.35rem .75rem;gap:.5rem;}
+  #socialBar span:first-child{display:none;}
+  .wmod{width:96vw!important;margin:.5rem!important;}
+  .pfban{border-radius:12px!important;}
+  .set-row{padding:.7rem .9rem!important;}
+  .mbtnrow{gap:.3rem!important;}
+  .ai-suggest{font-size:.58rem!important;padding:.2rem .4rem!important;}
+  .aichath{padding:.65rem .8rem!important;}
+  .aimsgs{padding:.5rem .6rem!important;}
+  .disc-input{padding:.5rem .7rem!important;}
+  .sbi{padding:.55rem .7rem!important;}
+}
+@media(max-width:480px){
+  .main{padding:.4rem .4rem 3.5rem!important;}
+  .sect{font-size:.95rem!important;}
+  .pfst{grid-template-columns:1fr 1fr!important;}
+  .pfsv{font-size:1.3rem!important;}
+  .aiinp{font-size:.78rem!important;}
+  .swfl{width:36px!important;height:36px!important;font-size:1rem!important;}
+}
+/* Ensure content doesn't hide behind social bar */
+.main{padding-bottom:3.5rem;}
+.page{padding-bottom:3.5rem;}
+
+/* ===== FLOATING ORBS ENHANCEMENT ===== */
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;animation:orbFloat ease-in-out infinite;}
+.orb1{width:300px;height:300px;background:radial-gradient(circle,rgba(139,105,20,.08),transparent 70%);top:10%;left:5%;animation-duration:18s;}
+.orb2{width:200px;height:200px;background:radial-gradient(circle,rgba(26,26,26,.06),transparent 70%);top:60%;right:8%;animation-duration:22s;animation-delay:-8s;}
+.orb3{width:150px;height:150px;background:radial-gradient(circle,rgba(90,70,50,.07),transparent 70%);bottom:15%;left:40%;animation-duration:15s;animation-delay:-12s;}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1) rotate(0deg);}25%{transform:translate(20px,-30px) scale(1.05) rotate(5deg);}50%{transform:translate(-15px,20px) scale(.95) rotate(-3deg);}75%{transform:translate(25px,10px) scale(1.02) rotate(2deg);}}
+[data-theme=dark] .orb1{background:radial-gradient(circle,rgba(212,168,67,.06),transparent 70%);}
+[data-theme=dark] .orb2{background:radial-gradient(circle,rgba(240,235,224,.04),transparent 70%);}
+
+/* ===== EXTRA MOBILE FIXES ===== */
+@media(max-width:600px){
+  .aiwrap{height:calc(100vh - 210px)!important;}
+  .disc-msgs{max-height:42vh!important;}
+  .swwrap{padding:.75rem!important;}
+  .ai-suggest{font-size:.62rem!important;padding:.28rem .5rem!important;}
+  .pftp{flex-direction:column;gap:.5rem!important;text-align:center;}
+}
 </style>
 </head>
 <body>
@@ -984,6 +1072,8 @@ footer{border-top:1px solid var(--bd2);padding:1.5rem;
 <!-- ANIMATED BG -->
 <div class="bgl"><div class="bb bb1"></div><div class="bb bb2"></div><div class="bb bb3"></div></div>
 <div class="bgr"></div>
+<div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+<div id="particlesWrap" style="position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;"></div>
 
 <!-- NAV -->
 <nav>
@@ -1061,6 +1151,16 @@ footer{border-top:1px solid var(--bd2);padding:1.5rem;
 </div>
 
 <!-- ======= MODALS ======= -->
+
+<!-- SOCIAL LINKS BAR -->
+<div style="position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;justify-content:center;align-items:center;gap:.75rem;padding:.45rem 1rem;background:var(--card);border-top:1px solid var(--bd2);backdrop-filter:blur(10px);" id="socialBar">
+  <span style="font-family:'DM Mono',monospace;font-size:.5rem;color:var(--t3);letter-spacing:.05em;">FOLLOW US</span>
+  <a href="https://cricketchain.xyz" target="_blank" title="Website" style="width:28px;height:28px;border-radius:8px;background:var(--bg3);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;color:var(--t2);transition:all .2s;text-decoration:none;" onmouseover="this.style.borderColor='var(--c1)';this.style.color='var(--c1)'" onmouseout="this.style.borderColor='var(--bd2)';this.style.color='var(--t2)'"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></a>
+  <a href="https://twitter.com/cricketchain" target="_blank" title="Twitter/X" style="width:28px;height:28px;border-radius:8px;background:var(--bg3);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;color:var(--t2);transition:all .2s;text-decoration:none;" onmouseover="this.style.borderColor='#1DA1F2';this.style.color='#1DA1F2'" onmouseout="this.style.borderColor='var(--bd2)';this.style.color='var(--t2)'"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+  <a href="https://github.com/Web3BuilderBappy/tkclub2" target="_blank" title="GitHub" style="width:28px;height:28px;border-radius:8px;background:var(--bg3);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;color:var(--t2);transition:all .2s;text-decoration:none;" onmouseover="this.style.borderColor='var(--c1)';this.style.color='var(--c1)'" onmouseout="this.style.borderColor='var(--bd2)';this.style.color='var(--t2)'"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+  <a href="https://discord.gg/cricketchain" target="_blank" title="Discord" style="width:28px;height:28px;border-radius:8px;background:var(--bg3);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;color:var(--t2);transition:all .2s;text-decoration:none;" onmouseover="this.style.borderColor='#5865F2';this.style.color='#5865F2'" onmouseout="this.style.borderColor='var(--bd2)';this.style.color='var(--t2)'"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.03.053a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg></a>
+  <a href="https://t.me/cricketchain" target="_blank" title="Telegram" style="width:28px;height:28px;border-radius:8px;background:var(--bg3);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;color:var(--t2);transition:all .2s;text-decoration:none;" onmouseover="this.style.borderColor='#0088cc';this.style.color='#0088cc'" onmouseout="this.style.borderColor='var(--bd2)';this.style.color='var(--t2)'"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a>
+</div>
 
 <!-- WALLET MODAL -->
 <div class="overlay" id="walletModal">
@@ -1424,7 +1524,7 @@ footer{border-top:1px solid var(--bd2);padding:1.5rem;
           <div class="tbt"><span class="tbl">You Receive</span><span class="tbl">Bal: <span id="rialoBal" style="color:var(--c1);">0</span> <span id="toTokLabel">RIALO</span></span></div>
           <div class="tbb">
             <input class="tbinp" type="number" id="rialoAmt" placeholder="0.0" readonly style="cursor:default;opacity:.7;">
-            <div class="tbtok" id="toTokBtn"><img src="" id="toTokImg" alt="RIALO" style="width:20px;height:20px;border-radius:50%;object-fit:cover;margin-right:4px;vertical-align:middle;flex-shrink:0;"><span id="toTok">RIALO</span></div>
+            <div class="tbtok" id="toTokBtn"><img src="" id="toTokImgEl" style="width:20px;height:20px;border-radius:50%;object-fit:cover;margin-right:5px;vertical-align:middle;flex-shrink:0;display:none;"><span id="toTok">RIALO</span></div>
           </div>
         </div>
         <div class="swinfo">
@@ -1694,6 +1794,73 @@ footer{border-top:1px solid var(--bd2);padding:1.5rem;
         </div>
       </div>
 
+      <!-- ADVANCED TOOLS -->
+      <div class="set-section">
+        <div class="set-section-label">ADVANCED TOOLS</div>
+        <div class="set-group">
+          <!-- AI Agent API Key -->
+          <div class="set-row" style="cursor:default;">
+            <div class="set-row-left">
+              <div class="set-row-icon" style="background:rgba(123,94,167,.12);">
+                <svg width="15" height="15" viewBox="0 0 24 24" stroke="#b48fd4" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/></svg>
+              </div>
+              <div>
+                <div class="set-row-label">AI Agent API Key</div>
+                <div class="set-row-sub">Anthropic API key for RialoFiBot</div>
+              </div>
+            </div>
+            <input class="set-inline-inp" id="apiKeyInp" type="password" placeholder="sk-ant-..." maxlength="120" onclick="event.stopPropagation()" style="max-width:140px;font-family:'DM Mono',monospace;font-size:.5rem;">
+          </div>
+          <div class="set-row" onclick="saveApiKey()" style="cursor:pointer;">
+            <div class="set-row-left">
+              <div class="set-row-icon" style="background:rgba(0,230,118,.1);">
+                <svg width="15" height="15" viewBox="0 0 24 24" stroke="var(--green)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              </div>
+              <div>
+                <div class="set-row-label">Save API Key</div>
+                <div class="set-row-sub">Stored locally in your browser only</div>
+              </div>
+            </div>
+            <svg class="set-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+            <div class="set-row-left">
+              <div class="set-row-icon" style="background:rgba(0,184,255,.1);">
+                <svg width="15" height="15" viewBox="0 0 24 24" stroke="var(--c2)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </div>
+              <div>
+                <div class="set-row-label">Export My Data</div>
+                <div class="set-row-sub">Download your prediction history as JSON</div>
+              </div>
+            </div>
+            <svg class="set-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="set-row" onclick="clearCommunityData()">
+            <div class="set-row-left">
+              <div class="set-row-icon" style="background:rgba(255,200,0,.1);">
+                <svg width="15" height="15" viewBox="0 0 24 24" stroke="#cc9900" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              </div>
+              <div>
+                <div class="set-row-label">Clear Chat History</div>
+                <div class="set-row-sub">Remove all local community messages</div>
+              </div>
+            </div>
+            <svg class="set-chevron" viewBox="0 0 24 24" style="stroke:#cc9900"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="set-row set-row-last" onclick="window.open('https://sepolia.etherscan.io/token/0x21f8568baF84E4DC99C8e6Fd3474C00721ab2A46','_blank')">
+            <div class="set-row-left">
+              <div class="set-row-icon" style="background:rgba(0,230,118,.1);">
+                <svg width="15" height="15" viewBox="0 0 24 24" stroke="var(--green)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              </div>
+              <div>
+                <div class="set-row-label">RIALO on Etherscan</div>
+                <div class="set-row-sub">View token analytics & holders</div>
+              </div>
+            </div>
+            <svg class="set-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+      </div>
+
       <!-- DANGER ZONE -->
       <div class="set-section">
         <div class="set-section-label">ACCOUNT ACTIONS</div>
@@ -1787,7 +1954,7 @@ var RIALO_LOGO="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gKgSUNDX1BST
 var BCA='0xCB315C99EEfA4e4d7Cd1757D9C1fe2f31C3e1a93';
 var TCA='0x21f8568baF84E4DC99C8e6Fd3474C00721ab2A46';
 var CHAIN=11155111,CHX='0xaa36a7';
-var CAPI='1278b439-0faf-4a44-876f-ca30862f5009';
+var CAPI='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';
 var BABI=["function matchCount() view returns (uint256)","function getAllMatches() view returns (tuple(uint256 id,string team1,string team2,string matchType,string venue,uint256 startTime,uint8 status,uint8 result,uint256 totalPool,uint256 team1Pool,uint256 team2Pool,uint256 drawPool)[])","function predict(uint256,uint8,uint256) payable","function claimReward(uint256)","function getUserPrediction(uint256,address) view returns (tuple(address predictor,uint256 matchId,uint8 choice,uint256 amount,bool claimed))","function createMatch(string,string,string,string,uint256) returns (uint256)","function closeMatch(uint256)","function resolveMatch(uint256,uint8)","function cancelMatch(uint256)","function owner() view returns (address)"];
 var TABI=["function balanceOf(address) view returns (uint256)","function approve(address,uint256) returns (bool)","function allowance(address,address) view returns (uint256)","function mint(address,uint256)"];
 var FL={IND:'\u{1F1EE}\u{1F1F3}',AUS:'\u{1F1E6}\u{1F1FA}',ENG:'\u{1F3F4}\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}',SA:'\u{1F1FF}\u{1F1E6}',NZ:'\u{1F1F3}\u{1F1FF}',PAK:'\u{1F1F5}\u{1F1F0}',BAN:'\u{1F1E7}\u{1F1E9}',SL:'\u{1F1F1}\u{1F1F0}',WI:'\u{1F1E7}\u{1F1E7}',AFG:'\u{1F1E6}\u{1F1EB}'};
@@ -1800,21 +1967,73 @@ var cBet={},cRes={},selR=null,aM=[],cf='all',busy=false;
 var curFromTok='ETH',curToTok='RIALO';
 
 // ============ LOADING SCREEN ============
+
+function exportData(){
+  if(!uA){toast('Connect wallet first','err');return;}
+  var data={wallet:uA,exported:new Date().toISOString(),predictions:[],community:[]};
+  try{data.community=JSON.parse(localStorage.getItem('cc_community')||'[]').filter(function(m){return m.authorAddr===uA;});}catch(e){}
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='cricketchain-data-'+uA.slice(0,8)+'.json';a.click();
+  toast('Data exported!','');
+}
+function clearCommunityData(){
+  if(!confirm('Clear all local community messages? This cannot be undone.'))return;
+  localStorage.removeItem('cc_community');
+  fbData=[];renderFb();
+  toast('Community chat cleared','');
+}
+
 window.addEventListener('load',function(){
+  // Init swap logos after ETH_SVG_LOGO and RIALO_LOGO are defined
   setTimeout(function(){
-    var l=document.getElementById('pgeload');
-    if(l)l.classList.add('hide');
-  },2000);
-  // Init swap logos on load
-  setTimeout(function(){
-    var ETH_SVG='<svg width="13" height="13" viewBox="0 0 256 417" xmlns="http://www.w3.org/2000/svg" style="margin-right:4px;vertical-align:middle;flex-shrink:0"><path fill="#343434" d="M127.9 0L125 9.5v275.7l3 2.9 127.9-75.6z"/><path fill="#8C8C8C" d="M127.9 0L0 212.5l127.9 75.6V0z"/><path fill="#3C3C3B" d="M127.9 312.8l-1.6 1.9v99.6l1.6 4.7L256 236.5z"/><path fill="#8C8C8C" d="M127.9 418.9v-106L0 236.5z"/><path fill="#141414" d="M127.9 288.1l127.9-75.6-127.9-58.2z"/><path fill="#393939" d="M0 212.5l127.9 75.6V154.3z"/></svg>';
-    var RIALO_IMG='<img src="'+RIALO_LOGO+'" style="width:20px;height:20px;border-radius:50%;object-fit:cover;margin-right:4px;vertical-align:middle;flex-shrink:0;">';
     var fb=document.getElementById('fromTokBtn');
     var tb=document.getElementById('toTokBtn');
-    if(fb)fb.innerHTML=ETH_SVG+'<span id="fromTok">ETH</span>';
-    if(tb)tb.innerHTML=RIALO_IMG+'<span id="toTok">RIALO</span>';
-  },100);
-  if(typeof ethers==='undefined'){alert('ethers.js failed to load! Check internet and refresh.');return;}
+    if(fb&&typeof ETH_SVG_LOGO!=='undefined')fb.innerHTML=ETH_SVG_LOGO+'<span id="fromTok">ETH</span>';
+    if(tb&&typeof RIALO_LOGO!=='undefined')tb.innerHTML='<img src="'+RIALO_LOGO+'" style="width:20px;height:20px;border-radius:50%;object-fit:cover;margin-right:5px;vertical-align:middle;flex-shrink:0;"><span id="toTok">RIALO</span>';
+  },300);
+  // Init particles
+  (function(){
+    var wrap=document.getElementById('particlesWrap');
+    if(!wrap)return;
+    var symbols=['◆','●','▲','⬡','⬟','✦','⊕'];
+    var colors=['rgba(139,105,20,.25)','rgba(26,26,26,.12)','rgba(60,60,60,.15)','rgba(100,80,40,.2)'];
+    // Create 18 floating particles
+    for(var i=0;i<18;i++){
+      var el=document.createElement('div');
+      el.className='particle';
+      var size=Math.random()*6+3;
+      var col=colors[Math.floor(Math.random()*colors.length)];
+      el.style.cssText='width:'+size+'px;height:'+size+'px;left:'+(Math.random()*100)+'%;'
+        +'background:'+col+';animation-duration:'+(Math.random()*20+15)+'s;animation-delay:-'+(Math.random()*20)+'s;';
+      wrap.appendChild(el);
+    }
+    // Create 4 pulse rings
+    for(var j=0;j<4;j++){
+      var ring=document.createElement('div');
+      ring.className='pulse-ring';
+      var rsize=Math.random()*60+20;
+      ring.style.cssText='width:'+rsize+'px;height:'+rsize+'px;left:'+(Math.random()*90+5)+'%;top:'+(Math.random()*90+5)+'%;'
+        +'border:1px solid rgba(139,105,20,.2);animation-duration:'+(Math.random()*6+4)+'s;animation-delay:-'+(Math.random()*6)+'s;';
+      wrap.appendChild(ring);
+    }
+    // Create 3 chain lines
+    for(var k=0;k<3;k++){
+      var line=document.createElement('div');
+      line.className='chain-line';
+      var lw=Math.random()*200+100;
+      line.style.cssText='width:'+lw+'px;top:'+(Math.random()*80+10)+'%;animation-duration:'+(Math.random()*8+6)+'s;animation-delay:-'+(Math.random()*8)+'s;';
+      wrap.appendChild(line);
+    }
+  })();
+  setTimeout(function(){
+    var l=document.getElementById('pgeload');
+    if(l){l.classList.add('hide');setTimeout(function(){l.style.display='none';},600);}
+    if(typeof ethers==='undefined'){
+      setTimeout(function(){alert('ethers.js failed to load! Please refresh.');},700);
+      return;
+    }
+  },300);
   var th=localStorage.getItem('cc_th');
   if(th==='dark'){document.documentElement.setAttribute('data-theme','dark');document.getElementById('darkTog').checked=true;updateThemeIcon(true);}else{document.documentElement.setAttribute('data-theme','light');updateThemeIcon(false);}
   document.getElementById('dashDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long'});
@@ -1839,6 +2058,64 @@ function showPage(p){
   var pg=document.getElementById('page-'+p);
   if(pg)pg.classList.add('active');
 }
+function renderPf(){
+  var con=document.getElementById('pfCon');
+  if(!con)return;
+  if(!uA){
+    con.innerHTML='<div class="ebox"><div class="eico">👤</div><div class="et">Connect Wallet</div><div class="es">Connect your MetaMask to view your profile and stats</div><br><button class="bprim" onclick="openWallet()" style="margin:auto;">Connect Wallet</button></div>';
+    return;
+  }
+  var sv=JSON.parse(localStorage.getItem('cc_u_'+uA)||'{}');
+  var name=sv.username||(uA.slice(0,6)+'...'+uA.slice(-4));
+  var avH=sv.avatar?'<img src="'+sv.avatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">':'🏏';
+  var shortAddr=uA.slice(0,6)+'...'+uA.slice(-4);
+  var now=Date.now();
+  if(!sv.joinDate){sv.joinDate=now;localStorage.setItem('cc_u_'+uA,JSON.stringify(sv));}
+  var joinStr=new Date(sv.joinDate).toLocaleDateString('en-US',{month:'short',year:'numeric'});
+  var tierLabel=isO?'👑 Owner':'🏏 Player';
+  con.innerHTML=
+    '<div style="border-radius:16px;overflow:hidden;border:1px solid var(--bd);margin-bottom:.75rem;">'
+      // Banner
+      +'<div style="height:90px;background:linear-gradient(135deg,#8B6914 0%,#3D3D3D 100%);position:relative;overflow:hidden;">'
+        +'<div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 15px,rgba(255,255,255,.03) 15px,rgba(255,255,255,.03) 16px);"></div>'
+        +'<div style="position:absolute;bottom:-38px;left:18px;width:76px;height:76px;border-radius:50%;border:3px solid var(--card);background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.4);">'+avH+'</div>'
+      +'</div>'
+      // Info
+      +'<div style="background:var(--card);padding:2.8rem 1.2rem 1.2rem;">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;">'
+          +'<div>'
+            +'<div style="font-size:1.05rem;font-weight:700;color:var(--t1);margin-bottom:.2rem;">'+name+(isO?' <span style=\"font-size:.6rem;background:var(--gold);color:#fff;border-radius:4px;padding:.1rem .3rem;\">OWNER</span>':'')+'</div>'
+            +'<div style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--t3);display:flex;align-items:center;gap:.4rem;">'
+              +shortAddr
+              +' <button onclick="navigator.clipboard.writeText(''+uA+'').then(function(){toast('Copied!');})" style="border:none;background:none;cursor:pointer;color:var(--t3);font-size:.7rem;padding:0;" title="Copy">⎘</button>'
+            +'</div>'
+            +'<div style="font-size:.6rem;color:var(--t3);margin-top:.2rem;">'+tierLabel+' · Since '+joinStr+'</div>'
+          +'</div>'
+          +'<a href="https://sepolia.etherscan.io/address/'+uA+'" target="_blank" style="font-size:.6rem;padding:.3rem .65rem;border-radius:7px;border:1px solid var(--bd);color:var(--t3);text-decoration:none;">↗ Etherscan</a>'
+        +'</div>'
+        +'<div class="pfst">'
+          +'<div class="pfs"><div class="pfsv" id="pf-b">—</div><div class="pfsl">Total Bets</div></div>'
+          +'<div class="pfs"><div class="pfsv" id="pf-w">—</div><div class="pfsl">Wins</div></div>'
+          +'<div class="pfs"><div class="pfsv" id="pf-wr">—</div><div class="pfsl">Win Rate</div></div>'
+          +'<div class="pfs"><div class="pfsv" id="pf-r">—</div><div class="pfsl">RIALO</div></div>'
+        +'</div>'
+      +'</div>'
+    +'</div>'
+    // Badges
+    +'<div style="background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:.85rem 1.1rem;margin-bottom:.75rem;">'
+      +'<div style="font-size:.68rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.55rem;">🏅 Achievements</div>'
+      +'<div id="pf-badges" style="display:flex;gap:.35rem;flex-wrap:wrap;">'
+        +'<span style="font-size:.6rem;padding:.2rem .55rem;border-radius:6px;background:var(--bg2);border:1px solid var(--bd);color:var(--t3);">🆕 New Player</span>'
+      +'</div>'
+    +'</div>'
+    // History
+    +'<div class="betpan">'
+      +'<div class="bptit">📋 Prediction History</div>'
+      +'<div id="myBL"><div class="lbox" style="padding:2rem 0;"><div class="spin"></div></div></div>'
+    +'</div>';
+  loadMyBets();
+}
+
 function nav(p){
   showPage(p);closeSB();
   document.querySelectorAll('.sbi').forEach(function(el){el.classList.remove('active');});
@@ -1876,6 +2153,12 @@ function nav(p){
     var nt=document.getElementById('notifTog');var ct=document.getElementById('compactTog');
     if(nt)nt.checked=prefs.notif!==false;
     if(ct)ct.checked=prefs.compact===true;
+    // Show API key status
+    var apiInp=document.getElementById('apiKeyInp');
+    if(apiInp){
+      var savedKey=localStorage.getItem('cc_api_key');
+      apiInp.placeholder=savedKey?'✅ Key saved (click to update)':'sk-ant-...';
+    }
   }
 }
 function openSB(){document.getElementById('sb').classList.add('open');document.getElementById('sbo').classList.add('on');}
@@ -1902,9 +2185,11 @@ function themeApply(dark){
 // ============ MODALS ============
 function closeM(id){document.getElementById(id).classList.remove('on');}
 function openWallet(){
+  // If MetaMask available, connect directly without modal delay
+  if(window.ethereum){doMM();return;}
   document.getElementById('walletModal').classList.add('on');
-  // Detect MetaMask
   var mmEl=document.getElementById('mmDetect');
+  if(mmEl)mmEl.textContent='Not Installed';
 }
 
 function showTx(state,label,desc,hash){
@@ -2062,7 +2347,7 @@ function disc(){
 var RPCS=['https://ethereum-sepolia-rpc.publicnode.com','https://sepolia.drpc.org','https://rpc2.sepolia.org','https://rpc.sepolia.org'];
 async function getRPC(){
   for(var i=0;i<RPCS.length;i++){
-    try{var rp=new ethers.providers.JsonRpcProvider(RPCS[i]);await Promise.race([rp.getBlockNumber(),new Promise((_,r)=>setTimeout(()=>r(new Error('t')),5000))]);return rp;}
+    try{var rp=new ethers.providers.JsonRpcProvider(RPCS[i]);await Promise.race([rp.getBlockNumber(),new Promise((_,r)=>setTimeout(()=>r(new Error('t')),6000))]);return rp;}
     catch(e){continue;}
   }throw new Error('All RPCs failed');
 }
@@ -2264,92 +2549,105 @@ async function loadDash(){
 async function loadLB(){
   var el=document.getElementById('lbBody');
   var cnt=document.getElementById('lbCnt');
-  el.innerHTML='<div class="lbox"><div class="spin"></div><div class="ltxt">Loading leaderboard...</div></div>';
+  el.innerHTML='<div class="lbox"><div class="spin"></div><div class="ltxt">Loading leaderboard from blockchain...</div></div>';
   try{
     var rp=await getRPC();
-    // PredictionPlaced event: event PredictionPlaced(uint256 indexed matchId, address indexed predictor, uint8 choice, uint256 amount)
-    var bcFull=new ethers.Contract(BCA,[
-      "function getAllMatches() view returns (tuple(uint256 id,string team1,string team2,string matchType,string venue,uint256 startTime,uint8 status,uint8 result,uint256 totalPool,uint256 team1Pool,uint256 team2Pool,uint256 drawPool)[])",
-      "function getUserPrediction(uint256,address) view returns (tuple(address predictor,uint256 matchId,uint8 choice,uint256 amount,bool claimed))",
-      "event PredictionPlaced(uint256 indexed matchId, address indexed predictor, uint8 choice, uint256 amount)",
-      "event RewardClaimed(uint256 indexed matchId, address indexed predictor, uint256 amount)"
-    ],rp);
-    var matches=await bcFull.getAllMatches();
-    // Step 1: Get ALL unique predictors via event logs
-    var predFilter=bcFull.filters.PredictionPlaced();
-    var predEvents=await bcFull.queryFilter(predFilter,0,'latest');
-    var uniqueAddrs={};
-    predEvents.forEach(function(ev){uniqueAddrs[ev.args.predictor.toLowerCase()]=ev.args.predictor;});
-    // Always include current user if connected
-    if(uA)uniqueAddrs[uA.toLowerCase()]=uA;
-    var allAddrs=Object.values(uniqueAddrs);
-    // Step 2: For each address, build stats from all matches
-    var playerMap={};
-    for(var i=0;i<allAddrs.length;i++){
-      var addr=allAddrs[i];
-      var sv=JSON.parse(localStorage.getItem('cc_u_'+addr)||'{}');
-      playerMap[addr]={addr:addr,name:sv.username||(addr.slice(0,6)+'...'+addr.slice(-4)),won:0,bets:0,wins:0,avatar:sv.avatar||null};
+    var bc=new ethers.Contract(BCA,BABI,rp);
+    // Use event logs to find ALL players - no wallet needed
+    var iface=new ethers.utils.Interface(["event PredictionPlaced(uint256 indexed matchId,address indexed predictor,uint8 choice,uint256 amount)"]);
+    var filter={address:BCA,topics:[ethers.utils.id("PredictionPlaced(uint256,address,uint8,uint256)")],fromBlock:0,toBlock:'latest'};
+    var logs=[];
+    try{
+      logs=await Promise.race([
+        rp.getLogs(filter),
+        new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),8000))
+      ]);
+    }catch(e){console.warn('getLogs failed, using localStorage fallback',e);}
+    // Collect unique addresses from logs
+    var addrs={};
+    logs.forEach(function(log){
+      try{
+        var parsed=iface.parseLog(log);
+        var addr=parsed.args.predictor;
+        if(addr)addrs[addr.toLowerCase()]=addr;
+      }catch(e){}
+    });
+    // Also scan localStorage for any known wallets
+    for(var k=0;k<localStorage.length;k++){
+      var key=localStorage.key(k);
+      if(key&&key.startsWith('cc_u_0x')){
+        var addr=key.replace('cc_u_','');
+        addrs[addr.toLowerCase()]=addr;
+      }
     }
-    for(var i=0;i<matches.length;i++){
-      var m=matches[i];
-      var st=Number(m.status);
-      var poolTotal=parseFloat(ethers.utils.formatUnits(m.totalPool,18));
-      for(var j=0;j<allAddrs.length;j++){
-        var addr=allAddrs[j];
+    // Also add current user if connected
+    if(uA)addrs[uA.toLowerCase()]=uA;
+    var addrList=Object.values(addrs);
+    if(addrList.length===0){
+      el.innerHTML='<div class="ebox"><div class="eico">🏆</div><div class="et">No players yet</div><div class="es">Be the first to place a bet!</div></div>';
+      if(cnt)cnt.textContent='';
+      return;
+    }
+    // Fetch matches
+    var matches=await bc.getAllMatches();
+    var players=[];
+    for(var ai=0;ai<addrList.length;ai++){
+      var addr=addrList[ai];
+      var sv={};
+      try{sv=JSON.parse(localStorage.getItem('cc_u_'+addr)||'{}');}catch(e){}
+      var pl={addr:addr,name:sv.username||(addr.slice(0,6)+'...'+addr.slice(-4)),bets:0,wins:0,won:0,avatar:sv.avatar||null};
+      for(var i=0;i<matches.length;i++){
+        var m=matches[i];
         try{
-          var p=await bcFull.getUserPrediction(m.id,addr);
-          if(!p.amount||p.amount.isZero())continue;
-          playerMap[addr].bets++;
-          if(st===2){
-            var choice=Number(p.choice);
-            var result=Number(m.result);
-            if(choice===result){
-              playerMap[addr].wins++;
-              var winPool=choice===1?parseFloat(ethers.utils.formatUnits(m.team1Pool,18)):choice===2?parseFloat(ethers.utils.formatUnits(m.team2Pool,18)):parseFloat(ethers.utils.formatUnits(m.drawPool,18));
+          var p=await bc.getUserPrediction(m.id,addr);
+          if(p&&p.amount&&!p.amount.isZero()){
+            pl.bets++;
+            var st=Number(m.status);
+            if(st===2&&Number(p.choice)===Number(m.result)){
+              pl.wins++;
+              var poolTotal=parseFloat(ethers.utils.formatUnits(m.totalPool,18));
               var myAmt=parseFloat(ethers.utils.formatUnits(p.amount,18));
-              if(winPool>0){playerMap[addr].won+=myAmt/winPool*poolTotal*0.95;}
+              var winPool=Number(p.choice)===1?parseFloat(ethers.utils.formatUnits(m.team1Pool,18)):(Number(p.choice)===2?parseFloat(ethers.utils.formatUnits(m.team2Pool,18)):parseFloat(ethers.utils.formatUnits(m.drawPool,18)));
+              if(winPool>0)pl.won+=Math.floor((myAmt/winPool)*poolTotal*0.95);
             }
           }
         }catch(e){}
       }
+      if(pl.bets>0)players.push(pl);
     }
-    var players=Object.values(playerMap);
-    // Sort by wins desc, then bets
-    players.sort(function(a,b){return b.wins-a.wins||(b.bets-a.bets);});
-    if(cnt)cnt.textContent=players.length+' Player'+(players.length!==1?'s':'');
+    players.sort(function(a,b){return b.wins-a.wins||b.bets-a.bets;});
+    if(cnt)cnt.textContent=players.length+' players';
     if(!players.length){
-      el.innerHTML='<div class="ebox" style="border:none;border-radius:0;"><div class="eico">🏆</div><div class="et">No players yet</div><div class="es">Place bets to appear on the leaderboard!</div></div>';
+      el.innerHTML='<div class="ebox"><div class="eico">🏆</div><div class="et">No players yet</div><div class="es">Be the first to place a bet!</div></div>';
       return;
     }
-    var rk=['🥇','🥈','🥉'];
-    var html='';
-    for(var j=0;j<players.length;j++){
-      var pl=players[j];
-      var wonFmt=Math.floor(pl.won).toFixed(0);
-      var rate=pl.bets>0?Math.round(pl.wins/pl.bets*100):0;
-      var avH=pl.avatar?'<img src="'+pl.avatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">':pl.name[0].toUpperCase();
-      html+='<div class="lbr"><div class="lbrk '+(j===0?'r1':j===1?'r2':j===2?'r3':'')+'">'+(rk[j]||j+1)+'</div>'+
-        '<div class="lbu"><div class="lbav">'+avH+'</div>'+
-        '<div><div class="lbn">'+pl.name+'</div><div class="lba">'+pl.addr.slice(0,6)+'...'+pl.addr.slice(-4)+'</div></div></div>'+
-        '<div class="lbnum lbg">'+wonFmt+'</div>'+
-        '<div class="lbnum">'+pl.bets+'</div>'+
-        '<div class="lbnum">'+rate+'%</div></div>';
-    }
-    el.innerHTML=html;
+    var medals=['🥇','🥈','🥉'];
+    var html2='';
+    players.forEach(function(pl,i){
+      var avH=pl.avatar?'<img src="'+pl.avatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">':'<span style="font-size:1rem;">🏏</span>';
+      var isMe=uA&&pl.addr.toLowerCase()===uA.toLowerCase();
+      var wr=pl.bets?Math.round(pl.wins/pl.bets*100):0;
+      html2+='<div class="lbr'+(isMe?' lbr-me':'')+'" style="'+(i<3?'border-left:3px solid var(--gold);':'')+'padding:.75rem 1.2rem;display:flex;align-items:center;gap:.85rem;border-bottom:1px solid var(--bd2);">'
+        +'<div style="font-size:'+(i<3?'1.3rem':'.9rem')+';min-width:28px;text-align:center;font-weight:700;color:var(--t3);">'+(i<3?medals[i]:'#'+(i+1))+'</div>'
+        +'<div style="width:38px;height:38px;border-radius:50%;background:var(--grd);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">'+avH+'</div>'
+        +'<div style="flex:1;min-width:0;">'
+          +'<div style="font-weight:600;font-size:.85rem;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+pl.name+(isMe?' <span style="font-size:.6rem;color:var(--gold);border:1px solid var(--gold);border-radius:4px;padding:.05rem .25rem;">YOU</span>':'')+'</div>'
+          +'<div style="font-size:.65rem;font-family:'DM Mono',monospace;color:var(--t3);">'+pl.addr.slice(0,8)+'...'+pl.addr.slice(-4)+'</div>'
+        +'</div>'
+        +'<div style="text-align:right;flex-shrink:0;">'
+          +'<div style="font-size:.9rem;font-weight:700;color:var(--t1);">'+pl.wins+' <span style="font-size:.65rem;color:var(--t3);">wins</span></div>'
+          +'<div style="font-size:.62rem;color:var(--t3);">'+pl.bets+' bets · '+wr+'% WR</div>'
+        +'</div>'
+        +'<div style="text-align:right;flex-shrink:0;min-width:70px;">'
+          +'<div style="font-size:.78rem;font-weight:700;color:var(--green);">'+pl.won+' <span style="font-size:.6rem;color:var(--t3);">RIALO</span></div>'
+        +'</div>'
+      +'</div>';
+    });
+    el.innerHTML=html2;
   }catch(e){
-    console.error(e);
-    el.innerHTML='<div class="ebox" style="border:none;"><div class="eico">⚠</div><div class="et">Could not load</div><div class="es">Check connection and try again</div></div>';
+    console.error('LB error:',e);
+    el.innerHTML='<div class="ebox"><div class="eico">⚠️</div><div class="et">Could not load leaderboard</div><div class="es">'+( e.message||'Network error').slice(0,80)+'</div><br><button class="bsec" onclick="loadLB()" style="margin:auto;">Retry</button></div>';
   }
-}
-
-// ============ PROFILE ============
-function renderPf(){
-  if(!uA){document.getElementById('pfCon').innerHTML='<div class="ebox"><div class="eico">👤</div><div class="et">Connect Wallet</div><div class="es">Connect to view your profile</div><br><button class="bprim" onclick="openWallet()" style="margin:auto;">Connect Wallet</button></div>';return;}
-  var sv=JSON.parse(localStorage.getItem('cc_u_'+uA)||'{}');
-  var name=sv.username||(uA.slice(0,10)+'...');
-  var avH=sv.avatar?'<img src="'+sv.avatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">':'🏏';
-  document.getElementById('pfCon').innerHTML='<div class="pfban"><div class="pftp"><div class="pfav">'+avH+'</div><div><div class="pfn">'+name+(isO?' 👑':'')+'</div><div class="pfa">'+uA+'</div></div></div><div class="pfst"><div class="pfs"><div class="pfsv" id="pf-b">0</div><div class="pfsl">Total Bets</div></div><div class="pfs"><div class="pfsv" id="pf-w">0</div><div class="pfsl">Won</div></div><div class="pfs"><div class="pfsv" id="pf-r">0</div><div class="pfsl">RIALO</div></div></div></div><div class="betpan"><div class="bptit">My Predictions</div><div id="myBL"><div class="lbox" style="padding:2rem 0;"><div class="spin"></div></div></div></div>';
-  loadMyBets();
 }
 async function loadMyBets(){
   if(!uA)return;
@@ -2372,6 +2670,18 @@ async function loadMyBets(){
     }
     var pfb=document.getElementById('pf-b');if(pfb)pfb.textContent=n;
     var pfw=document.getElementById('pf-w');if(pfw)pfw.textContent=won;
+    var pfwr=document.getElementById('pf-wr');if(pfwr)pfwr.textContent=n>0?Math.round(won/n*100)+'%':'0%';
+    // Update badges
+    var badges=document.getElementById('pf-badges');
+    if(badges){
+      var bhtml='<span style="font-size:.6rem;padding:.2rem .55rem;border-radius:6px;background:var(--bg2);border:1px solid var(--bd);color:var(--t3);">🆕 New Player</span>';
+      if(n>=1)bhtml+='<span style="font-size:.6rem;padding:.2rem .55rem;border-radius:6px;background:rgba(139,105,20,.1);border:1px solid rgba(139,105,20,.3);color:var(--gold);">🎯 First Bet</span>';
+      if(n>=5)bhtml+='<span style="font-size:.6rem;padding:.2rem .55rem;border-radius:6px;background:rgba(139,105,20,.1);border:1px solid rgba(139,105,20,.3);color:var(--gold);">🔥 5 Bets</span>';
+      if(won>=1)bhtml+='<span style="font-size:.6rem;padding:.2rem .55rem;border-radius:6px;background:rgba(30,122,58,.1);border:1px solid rgba(30,122,58,.3);color:var(--green);">✅ First Win</span>';
+      if(won>=3)bhtml+='<span style="font-size:.6rem;padding:.2rem .55rem;border-radius:6px;background:rgba(30,122,58,.1);border:1px solid rgba(30,122,58,.3);color:var(--green);">⭐ 3 Wins</span>';
+      if(isO)bhtml+='<span style="font-size:.6rem;padding:.2rem .55rem;border-radius:6px;background:rgba(139,105,20,.2);border:1px solid var(--gold);color:var(--gold);">👑 Platform Owner</span>';
+      badges.innerHTML=bhtml;
+    }
     var myBL=document.getElementById('myBL');if(myBL)myBL.innerHTML=n?html:'<div class="ebox" style="border:none;"><div class="eico">🎯</div><div class="et">No bets yet</div></div>';
   }catch(e){console.error(e);}
 }
@@ -2385,20 +2695,24 @@ async function claimR(id){
 // ============ TRADE ============
 var tokRates={'ETH-RIALO':1000,'RIALO-ETH':0.001};
 var tokMins={'ETH-RIALO':0.001,'RIALO-ETH':10};
+var ETH_SVG_LOGO='<svg width="14" height="14" viewBox="0 0 256 417" xmlns="http://www.w3.org/2000/svg" style="margin-right:5px;vertical-align:middle;flex-shrink:0"><path fill="#343434" d="M127.9 0L125 9.5v275.7l3 2.9 127.9-75.6z"/><path fill="#8C8C8C" d="M127.9 0L0 212.5l127.9 75.6V0z"/><path fill="#3C3C3B" d="M127.9 312.8l-1.6 1.9v99.6l1.6 4.7L256 236.5z"/><path fill="#8C8C8C" d="M127.9 418.9v-106L0 236.5z"/><path fill="#141414" d="M127.9 288.1l127.9-75.6-127.9-58.2z"/><path fill="#393939" d="M0 212.5l127.9 75.6V154.3z"/></svg>';
+function getTokIcon(tok,size){
+  size=size||'20px';
+  if(tok==='RIALO')return '<img src="'+RIALO_LOGO+'" style="width:'+size+';height:'+size+';border-radius:50%;object-fit:cover;margin-right:5px;vertical-align:middle;flex-shrink:0;">';
+  return ETH_SVG_LOGO;
+}
 function setTokPair(from,to,el){
   curFromTok=from;curToTok=to;
   document.querySelectorAll('.tokpair').forEach(function(t){t.classList.remove('active');});
   el.classList.add('active');
   var rate=tokRates[from+'-'+to]||1;
-  var ETH_SVG='<svg width="13" height="13" viewBox="0 0 256 417" xmlns="http://www.w3.org/2000/svg" style="margin-right:4px;vertical-align:middle;flex-shrink:0"><path fill="#343434" d="M127.9 0L125 9.5v275.7l3 2.9 127.9-75.6z"/><path fill="#8C8C8C" d="M127.9 0L0 212.5l127.9 75.6V0z"/><path fill="#3C3C3B" d="M127.9 312.8l-1.6 1.9v99.6l1.6 4.7L256 236.5z"/><path fill="#8C8C8C" d="M127.9 418.9v-106L0 236.5z"/><path fill="#141414" d="M127.9 288.1l127.9-75.6-127.9-58.2z"/><path fill="#393939" d="M0 212.5l127.9 75.6V154.3z"/></svg>';
-  var RIALO_IMG='<img src="'+RIALO_LOGO+'" style="width:20px;height:20px;border-radius:50%;object-fit:cover;margin-right:4px;vertical-align:middle;flex-shrink:0;">';
-  // Update FROM token button (logo + label)
-  document.getElementById('fromTokBtn').innerHTML=(from==='RIALO'?RIALO_IMG:ETH_SVG)+'<span id="fromTok">'+from+'</span>';
+  // Update FROM token
+  var fb=document.getElementById('fromTokBtn');
+  if(fb)fb.innerHTML=getTokIcon(from)+'<span id="fromTok">'+from+'</span>';
   document.getElementById('fromTokLabel').textContent=from;
-  // Update TO token button (logo + label)
-  var TO_RIALO_IMG='<img src="'+RIALO_LOGO+'" style="width:20px;height:20px;border-radius:50%;object-fit:cover;margin-right:4px;vertical-align:middle;flex-shrink:0;">';
-  var TO_ETH_SVG='<svg width="13" height="13" viewBox="0 0 256 417" xmlns="http://www.w3.org/2000/svg" style="margin-right:4px;vertical-align:middle;flex-shrink:0"><path fill="#343434" d="M127.9 0L125 9.5v275.7l3 2.9 127.9-75.6z"/><path fill="#8C8C8C" d="M127.9 0L0 212.5l127.9 75.6V0z"/><path fill="#3C3C3B" d="M127.9 312.8l-1.6 1.9v99.6l1.6 4.7L256 236.5z"/><path fill="#8C8C8C" d="M127.9 418.9v-106L0 236.5z"/><path fill="#141414" d="M127.9 288.1l127.9-75.6-127.9-58.2z"/><path fill="#393939" d="M0 212.5l127.9 75.6V154.3z"/></svg>';
-  document.getElementById('toTokBtn').innerHTML=(to==='RIALO'?TO_RIALO_IMG:TO_ETH_SVG)+'<span id="toTok">'+to+'</span>';
+  // Update TO token
+  var tb=document.getElementById('toTokBtn');
+  if(tb)tb.innerHTML=getTokIcon(to)+'<span id="toTok">'+to+'</span>';
   document.getElementById('toTokLabel').textContent=to;
   document.getElementById('swRate').textContent='1 '+from+' = '+rate+' '+to;
   document.getElementById('swMin').textContent=tokMins[from+'-'+to]+' '+from;
@@ -2481,6 +2795,17 @@ function saveSetPref(key,val){
   localStorage.setItem('cc_prefs',JSON.stringify(prefs));
   toast('Preference saved','');
 }
+function saveApiKey(){
+  var inp=document.getElementById('apiKeyInp');
+  if(!inp)return;
+  var key=inp.value.trim();
+  if(!key){toast('Enter an API key first','err');return;}
+  if(!key.startsWith('sk-ant-')){toast('Invalid key — must start with sk-ant-','err');return;}
+  localStorage.setItem('cc_api_key',key);
+  inp.value='';
+  inp.placeholder='✅ Key saved';
+  toast('✅ API key saved! AI Agent is ready.','');
+}
 function uploadAv(e){
   var f=e.target.files[0];if(!f)return;
   var r=new FileReader();
@@ -2507,41 +2832,109 @@ async function addMM(){
 }
 
 // ============ AI AGENT ============
-var AI_SYS=`You are RialoFiBot, a smart AI cricket prediction assistant for CricketChain — a cricket betting platform built on the Rialo Protocol (Ethereum Sepolia testnet).
+var AI_SYS=`You are RialoFiBot 🏏 — the official AI assistant of CricketChain, built on the Rialo Protocol.
 
-Your PRIMARY job is to help users make smart betting decisions. You analyze cricket matches and give clear, confident recommendations.
+## Your Identity
+- Name: RialoFiBot
+- Created by: CricketChain team (Rialo Protocol)
+- Role: Your friendly cricket prediction buddy & platform guide
+- Personality: Friendly, casual, fun — like a knowledgeable cricket fan friend who also knows Web3!
 
-Key platform info:
-- Token: RIALO (ERC-20 on Sepolia testnet), minimum bet: 10 RIALO
-- Platform fee: 5% of pool
-- How to bet: Connect MetaMask → Get RIALO via Trade (ETH→RIALO, 1 ETH = 1000 RIALO) → Go to Markets → Pick match → Place prediction
-- Sections: Dashboard, Markets, Trade (swap ETH↔RIALO), Leaderboard, AI Agent, Profile, Settings, Feedback
-- Contract: 0xCB315C99EEfA4e4d7Cd1757D9C1fe2f31C3e1a93 on Sepolia
-- RIALO Token: 0x21f8568baF84E4DC99C8e6Fd3474C00721ab2A46
+## About CricketChain
+CricketChain is a cricket prediction platform on the Ethereum Sepolia testnet where users bet using RIALO tokens. It's part of the Rialo Protocol ecosystem — bringing cricket and DeFi together.
 
-When giving betting advice:
-1. Consider recent team form, head-to-head records, pitch/venue conditions, player injuries
-2. Give a clear recommendation with reasoning (e.g., "I recommend betting on IND because...")
-3. Mention the risk level (Low/Medium/High)
-4. Suggest a reasonable stake amount based on confidence level
-5. Always remind users this is a prediction, not guaranteed
+**Platform details:**
+- 🪙 Token: RIALO (ERC-20, Sepolia testnet)
+- 💸 Minimum bet: 10 RIALO
+- 📊 Platform fee: 5% of pool (goes to platform)
+- ⚡ Rate: 1 ETH = 1,000 RIALO (via Trade page)
+- 🔗 CricketChain Contract: 0xCB315C99EEfA4e4d7Cd1757D9C1fe2f31C3e1a93
+- 🔗 RIALO Token: 0x21f8568baF84E4DC99C8e6Fd3474C00721ab2A46
+- 🌐 Network: Ethereum Sepolia Testnet
 
-Always respond in English by default. If the user writes in Bengali, respond in Bengali.
-Keep answers helpful, data-driven, and concise. Be confident in your recommendations!`;
+**How to get started:**
+1. Connect MetaMask wallet
+2. Go to Trade → swap ETH for RIALO (1 ETH = 1000 RIALO)
+3. Go to Markets → pick a match
+4. Place your prediction (min 10 RIALO)
+5. If you win, claim your reward!
+
+**Sections of the app:**
+- 🏠 Dashboard — overview, stats, recent matches
+- 🏏 Markets — all active cricket matches to bet on
+- 🔄 Trade — swap ETH ↔ RIALO
+- 🏆 Leaderboard — top predictors ranked
+- 🤖 AI Agent — that's me! Ask me anything
+- 👤 Profile — your prediction history & stats
+- ⚙️ Settings — customize your experience
+- 💬 Feedback — community chat (Discord-style)
+
+## Your Job
+1. Help users navigate CricketChain
+2. Give cricket match analysis & betting tips
+3. Explain how RIALO tokens & predictions work
+4. Be encouraging & fun — hype up wins, console losses
+5. Answer any Web3/crypto questions related to the platform
+
+## Betting Advice Style
+- Give clear picks with reasoning: "I'd go with IND here because..."
+- Mention risk level: 🟢 Low / 🟡 Medium / 🔴 High
+- Suggest stake size based on confidence
+- Always add: "This is a prediction, not financial advice 😄"
+- Use cricket emojis to keep it fun 🏏🎯🔥
+
+## Language
+- Default: English (friendly & casual tone)
+- If user writes in Bengali → reply in Bengali
+- Use cricket slang naturally: "that's a googly!", "clean bowled!", "what a six!"
+- Keep responses concise — no walls of text
+
+## Important
+- Never pretend to be ChatGPT, Claude, or any other AI
+- You are RialoFiBot, made exclusively for CricketChain
+- If asked who made you: "I was built by the CricketChain team as part of the Rialo Protocol! 🏏"
+- Never reveal technical details about your underlying model`;
 
 function clearAIChat(){aiHistory=[];var msgs=document.getElementById('aimsgs');msgs.innerHTML='';initAI();}
 function askSuggestion(txt){document.getElementById('aiinp').value=txt;sendAI();}
 
 var aiHistory=[];
 function initAI(){
-  addAIMsg('bot','👋 **Welcome! I am RialoFiBot** 🏏\n\nI can help you with:\n• 🎯 Match analysis & betting recommendations\n• 💰 How to get RIALO tokens\n• 📊 Market trends & predictions\n• ❓ Anything about CricketChain\n\nWhat would you like to know?');
+  var hasKey=localStorage.getItem('cc_api_key')||CAPI;
+  if(!hasKey){
+    addAIMsg('bot','👋 **Welcome to RialoFiBot!** 🏏
+
+⚠️ **Setup Required:**
+Add your Anthropic API key in:
+**Settings → Advanced Tools → AI Agent API Key**
+
+Get your key at: console.anthropic.com
+
+Then I can help with match analysis, predictions & more!');
+    return;
+  }
+  addAIMsg('bot','Hey! 👋 I'm **RialoFiBot** 🏏 — your cricket prediction buddy on CricketChain!
+
+Here's what I can do:
+• 🎯 Match tips & predictions
+• 💰 RIALO token guide
+• 📊 Strategy & odds advice
+• 🗺️ Platform help & navigation
+• ❓ Any cricket or Web3 question!
+
+Ask me anything — let's win some predictions! 🔥');
 }
 function addAIMsg(type,text){
   var msgs=document.getElementById('aimsgs');
   var div=document.createElement('div');
   div.className='aimsg '+type;
   // Simple markdown: bold
-  div.innerHTML=text.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  div.innerHTML=text
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/`(.+?)`/g,'<code style="background:var(--bg3);padding:.1rem .3rem;border-radius:4px;font-family:\'DM Mono\',monospace;font-size:.78rem;">$1</code>')
+    .replace(/^• (.+)$/gm,'<span style="display:block;padding-left:.75rem;">• $1</span>')
+    .replace(/\n/g,'<br>');
   msgs.appendChild(div);
   msgs.scrollTop=msgs.scrollHeight;
   return div;
@@ -2552,28 +2945,44 @@ async function sendAI(){
   inp.value='';
   addAIMsg('usr',txt);
   aiHistory.push({role:'user',content:txt});
-  // Typing indicator
   var typing=addAIMsg('bot typing','<span></span><span></span><span></span>');
   try{
+    // Use stored API key from settings or default
+    var apiKey=localStorage.getItem('cc_api_key')||CAPI||'';
+    if(!apiKey){
+      typing.remove();
+      addAIMsg('bot','⚠️ **API key not set.** Go to Settings → AI Agent to add your Anthropic API key.');
+      return;
+    }
     var body={
-      model:'claude-sonnet-4-20250514',
-      max_tokens:1000,
+      model:'anthropic/claude-haiku-4-5',
+      max_tokens:800,
       system:AI_SYS,
-      messages:aiHistory.slice(-10)
+      messages:aiHistory.slice(-12)
     };
-    var resp=await fetch('https://api.anthropic.com/v1/messages',{
+    var resp=await fetch('https://openrouter.ai/api/v1/chat/completions',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+apiKey,
+        'HTTP-Referer':'https://tkclub2.vercel.app',
+        'X-Title':'CricketChain RialoFiBot'
+      },
       body:JSON.stringify(body)
     });
     var data=await resp.json();
-    var reply=data.content&&data.content[0]?data.content[0].text:'Sorry, I could not get a response. Please try again.';
+    if(data.error){
+      typing.remove();
+      addAIMsg('bot','⚠️ **AI Error:** '+data.error.message);
+      return;
+    }
+    var reply=data.choices&&data.choices[0]?data.choices[0].message.content:'Sorry, I could not get a response.';
     typing.remove();
     addAIMsg('bot',reply);
     aiHistory.push({role:'assistant',content:reply});
   }catch(e){
     typing.remove();
-    addAIMsg('bot','Sorry, I\'m having trouble connecting right now. Please try again in a moment.');
+    addAIMsg('bot','⚠️ **Connection issue.** Please check your internet and try again.');
   }
 }
 
