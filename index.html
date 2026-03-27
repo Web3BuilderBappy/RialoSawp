@@ -3,851 +3,769 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>ZenTrade — Binary Trading</title>
+<title>ZenTrade</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.1/ethers.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lightweight-charts/4.1.3/lightweight-charts.standalone.production.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
-:root{
-  --bg:#08090e;--bg2:#0d0f1a;--bg3:#111320;--card:#151828;
-  --b1:#1c1f32;--b2:#252840;
-  --teal:#00d4aa;--teal2:#00b894;--teal-g:rgba(0,212,170,.15);
-  --up:#00d4aa;--down:#ff3d5a;--down-g:rgba(255,61,90,.15);
-  --txt:#e2e5f0;--txt2:#8890aa;--txt3:#454d6a;
-  --font:'Space Grotesk',sans-serif;--mono:'JetBrains Mono',monospace;
-  --rad:10px;
-}
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--font);overflow:hidden;}
+:root{
+  --bg:#07080d;--bg2:#0d0f1a;--bg3:#111320;--card:#151828;
+  --b1:#1a1d2e;--b2:#22253a;
+  --teal:#00d4aa;--teal2:#00b894;--tg:rgba(0,212,170,.12);
+  --up:#00d4aa;--down:#ff3355;--dg:rgba(255,51,85,.12);
+  --gold:#f5c842;
+  --t1:#dde1f0;--t2:#7a82a0;--t3:#3e4460;
+  --font:'Space Grotesk',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--font);overflow:hidden;}
 
-/* ══ LAYOUT ══ */
+/* APP SHELL */
 .app{display:flex;flex-direction:column;height:100vh;}
 
-/* ══ TOPBAR ══ */
+/* TOPBAR */
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 16px;height:50px;background:var(--bg2);
-  border-bottom:1px solid var(--b1);flex-shrink:0;z-index:50;
+  height:52px;padding:0 16px;background:var(--bg2);
+  border-bottom:1px solid var(--b1);flex-shrink:0;z-index:100;
 }
-.logo{display:flex;align-items:center;gap:9px;}
-.logo-mark{
-  width:28px;height:28px;background:var(--teal);border-radius:7px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:800;color:#000;letter-spacing:-1px;
-}
-.logo-name{font-size:15px;font-weight:700;}
-.logo-name span{color:var(--teal);}
+.logo{display:flex;align-items:center;gap:8px;cursor:default;}
+.logo-box{width:30px;height:30px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#000;}
+.logo-txt{font-size:16px;font-weight:700;}
+.logo-txt b{color:var(--teal);}
 
-.price-bar{display:flex;gap:20px;align-items:center;}
-.price-item{display:flex;flex-direction:column;align-items:flex-end;}
-.price-sym{font-size:10px;color:var(--txt3);letter-spacing:.5px;font-weight:600;}
-.price-val{font-size:13px;font-weight:600;font-family:var(--mono);}
-.price-chg{font-size:10px;font-family:var(--mono);}
-.chg-up{color:var(--up);}
-.chg-dn{color:var(--down);}
+.ticker-bar{display:flex;gap:18px;}
+.ticker{display:flex;flex-direction:column;align-items:flex-end;cursor:pointer;padding:2px 6px;border-radius:6px;transition:.15s;}
+.ticker:hover{background:var(--b1);}
+.ticker.sel{background:var(--tg);}
+.t-sym{font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.5px;}
+.t-price{font-size:12px;font-weight:600;font-family:var(--mono);}
+.t-chg{font-size:9px;font-family:var(--mono);}
+.up{color:var(--up);} .dn{color:var(--down);}
 
-.topbar-right{display:flex;align-items:center;gap:10px;}
-.wallet-badge{
-  display:flex;align-items:center;gap:7px;padding:6px 12px;
-  background:var(--bg3);border:1px solid var(--b1);border-radius:8px;
-  font-size:12px;cursor:pointer;transition:.2s;
-}
-.wallet-badge:hover{border-color:var(--teal);color:var(--teal);}
-.wallet-dot{width:7px;height:7px;border-radius:50%;background:var(--txt3);}
-.wallet-dot.on{background:var(--teal);box-shadow:0 0 6px var(--teal);}
-.connect-btn{
+.topbar-r{display:flex;align-items:center;gap:8px;}
+.conn-btn{
   padding:7px 16px;background:var(--teal);color:#000;border:none;
   border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;
-  font-family:var(--font);transition:.2s;
+  font-family:var(--font);transition:.15s;white-space:nowrap;
 }
-.connect-btn:hover{background:var(--teal2);}
+.conn-btn:hover{background:var(--teal2);}
+.conn-btn.connected{background:var(--b1);color:var(--teal);border:1px solid var(--teal);}
 
-/* ══ MAIN BODY ══ */
-.body{display:flex;flex:1;overflow:hidden;}
+/* CONTENT */
+.content{display:flex;flex:1;overflow:hidden;}
 
-/* ══ LEFT: ASSET PANEL ══ */
-.asset-panel{
-  width:62px;background:var(--bg2);border-right:1px solid var(--b1);
-  display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px;flex-shrink:0;
-}
-.asset-btn{
-  width:46px;height:46px;border-radius:9px;border:1px solid transparent;
-  background:transparent;cursor:pointer;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:2px;transition:.2s;
-}
-.asset-btn:hover{background:var(--bg3);}
-.asset-btn.active{background:var(--teal-g);border-color:var(--teal);}
-.asset-ico{font-size:18px;}
-.asset-lbl{font-size:8px;font-weight:700;color:var(--txt3);letter-spacing:.3px;}
-.asset-btn.active .asset-lbl{color:var(--teal);}
+/* PAGES */
+.page{display:none;flex:1;overflow:hidden;}
+.page.show{display:flex;}
 
-/* ══ CENTER: CHART ══ */
-.chart-area{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
-.chart-header{
+/* ── MARKET PAGE ── */
+#pgMarket{flex-direction:row;}
+
+/* CHART COL */
+.chart-col{display:flex;flex-direction:column;flex:1;overflow:hidden;}
+.chart-bar{
   display:flex;align-items:center;justify-content:space-between;
   padding:8px 14px;border-bottom:1px solid var(--b1);flex-shrink:0;
 }
-.chart-asset{display:flex;align-items:center;gap:10px;}
-.chart-asset-name{font-size:15px;font-weight:700;}
-.chart-price-big{font-size:22px;font-weight:700;font-family:var(--mono);color:var(--teal);}
-.chart-price-chg{font-size:12px;font-family:var(--mono);margin-left:4px;}
-.tf-tabs{display:flex;gap:3px;}
-.tf-tab{
-  padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;
-  border:1px solid transparent;cursor:pointer;color:var(--txt3);
-  background:transparent;transition:.2s;font-family:var(--font);
-}
-.tf-tab:hover{color:var(--txt);}
-.tf-tab.active{background:var(--teal-g);border-color:var(--teal);color:var(--teal);}
-#chart{flex:1;width:100%;}
+.cb-left{display:flex;align-items:center;gap:12px;}
+.cb-pair{font-size:15px;font-weight:700;}
+.cb-price{font-size:20px;font-weight:700;font-family:var(--mono);color:var(--teal);}
+.cb-chg{font-size:11px;font-family:var(--mono);margin-left:2px;}
+.tf-row{display:flex;gap:3px;}
+.tf{padding:4px 9px;border-radius:5px;font-size:10px;font-weight:700;border:1px solid transparent;cursor:pointer;color:var(--t2);background:none;font-family:var(--font);transition:.15s;}
+.tf:hover{color:var(--t1);}
+.tf.on{background:var(--tg);border-color:var(--teal);color:var(--teal);}
+#chartEl{flex:1;}
 
-/* countdown bar */
-.countdown-bar{
-  position:absolute;bottom:0;left:0;right:0;height:3px;
-  background:var(--b1);
+/* TRADE SIDEBAR */
+.trade-side{
+  width:280px;display:flex;flex-direction:column;
+  background:var(--bg2);border-left:1px solid var(--b1);overflow-y:auto;flex-shrink:0;
 }
-.countdown-fill{
-  height:100%;background:var(--teal);transition:width .1s linear;
-}
+.trade-side::-webkit-scrollbar{width:3px;}
+.trade-side::-webkit-scrollbar-thumb{background:var(--b2);}
 
-/* ══ RIGHT: TRADE PANEL ══ */
-.trade-panel{
-  width:290px;background:var(--bg2);border-left:1px solid var(--b1);
-  display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;
-}
-.trade-panel::-webkit-scrollbar{width:4px;}
-.trade-panel::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px;}
+.ts-block{padding:14px;border-bottom:1px solid var(--b1);}
+.ts-lbl{font-size:9px;font-weight:700;color:var(--t3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;}
 
-.tp-section{padding:14px;border-bottom:1px solid var(--b1);}
-.tp-label{font-size:10px;font-weight:700;color:var(--txt3);letter-spacing:1px;margin-bottom:10px;text-transform:uppercase;}
-
-/* Duration selector */
-.dur-group{margin-bottom:14px;}
-.dur-group-title{font-size:10px;color:var(--txt3);margin-bottom:6px;font-weight:600;}
-.dur-tabs{display:flex;gap:4px;flex-wrap:wrap;}
-.dur-tab{
+/* duration */
+.dur-section{margin-bottom:10px;}
+.dur-title{font-size:10px;font-weight:600;color:var(--t2);margin-bottom:6px;}
+.dur-row{display:flex;gap:4px;flex-wrap:wrap;}
+.dur-btn{
   padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;
-  border:1px solid var(--b1);cursor:pointer;color:var(--txt2);
-  background:var(--bg3);transition:.15s;font-family:var(--font);
+  border:1px solid var(--b1);cursor:pointer;color:var(--t2);background:var(--bg3);
+  font-family:var(--font);transition:.15s;
 }
-.dur-tab:hover{border-color:var(--txt3);}
-.dur-tab.active{background:var(--teal-g);border-color:var(--teal);color:var(--teal);}
-.dur-tab.long-dur.active{background:rgba(255,200,50,.1);border-color:#ffc832;color:#ffc832;}
+.dur-btn:hover{border-color:var(--t3);color:var(--t1);}
+.dur-btn.on{background:var(--tg);border-color:var(--teal);color:var(--teal);}
+.dur-btn.long.on{background:rgba(245,200,66,.1);border-color:var(--gold);color:var(--gold);}
 
-/* Amount input */
-.amount-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.amount-input-wrap{
-  flex:1;display:flex;align-items:center;
-  background:var(--bg3);border:1px solid var(--b1);border-radius:8px;
-  padding:0 10px;height:40px;
-}
-.amount-input-wrap:focus-within{border-color:var(--teal);}
-.amount-input{
-  flex:1;background:none;border:none;outline:none;
-  color:var(--txt);font-size:14px;font-family:var(--mono);font-weight:600;
-}
-.amount-currency{font-size:11px;color:var(--txt3);font-weight:600;}
-.amount-presets{display:flex;gap:4px;}
-.preset-btn{
-  flex:1;padding:5px 0;border-radius:6px;font-size:10px;font-weight:700;
-  border:1px solid var(--b1);cursor:pointer;color:var(--txt3);
-  background:var(--bg3);transition:.15s;font-family:var(--font);
-}
-.preset-btn:hover{border-color:var(--teal);color:var(--teal);}
-
-/* Wallet balance in trade panel */
-.wallet-balance-row{
+/* wallet balance in sidebar */
+.bal-row{
   display:flex;justify-content:space-between;align-items:center;
-  padding:8px 10px;background:var(--bg3);border-radius:8px;margin-bottom:10px;
+  background:var(--bg3);border-radius:8px;padding:8px 10px;margin-bottom:10px;
 }
-.wb-label{font-size:11px;color:var(--txt3);}
-.wb-val{font-size:12px;font-weight:700;font-family:var(--mono);color:var(--teal);}
+.bal-lbl{font-size:10px;color:var(--t3);}
+.bal-val{font-size:13px;font-weight:700;font-family:var(--mono);color:var(--teal);}
 
-/* Payout preview */
-.payout-row{
-  display:flex;justify-content:space-between;font-size:11px;
-  color:var(--txt2);margin-bottom:12px;
+/* amount */
+.amt-wrap{
+  display:flex;align-items:center;background:var(--bg3);
+  border:1px solid var(--b1);border-radius:8px;padding:0 10px;height:40px;margin-bottom:8px;
 }
+.amt-wrap:focus-within{border-color:var(--teal);}
+.amt-inp{flex:1;background:none;border:none;outline:none;color:var(--t1);font-size:14px;font-family:var(--mono);font-weight:600;}
+.amt-cur{font-size:10px;color:var(--t3);font-weight:700;}
+.quick-row{display:flex;gap:4px;margin-bottom:12px;}
+.quick{
+  flex:1;padding:5px 0;border-radius:6px;font-size:10px;font-weight:700;
+  border:1px solid var(--b1);cursor:pointer;color:var(--t3);background:var(--bg3);
+  font-family:var(--font);transition:.15s;
+}
+.quick:hover{border-color:var(--teal);color:var(--teal);}
+
+/* payout */
+.payout-row{display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-bottom:12px;}
 .payout-val{color:var(--up);font-weight:700;font-family:var(--mono);}
 
-/* Trade buttons */
+/* UP DOWN buttons */
 .trade-btns{display:flex;gap:8px;}
 .btn-up,.btn-dn{
-  flex:1;height:52px;border:none;border-radius:10px;cursor:pointer;
-  font-size:14px;font-weight:800;font-family:var(--font);
+  flex:1;height:50px;border:none;border-radius:10px;cursor:pointer;
+  font-size:13px;font-weight:800;font-family:var(--font);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:1px;transition:.15s;
+  gap:2px;transition:.15s;
 }
 .btn-up{background:var(--up);color:#000;}
-.btn-up:hover{background:#00f5c3;transform:translateY(-1px);}
+.btn-up:hover{background:#00f0c0;}
 .btn-dn{background:var(--down);color:#fff;}
-.btn-dn:hover{background:#ff1a40;transform:translateY(-1px);}
-.btn-up:disabled,.btn-dn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
-.btn-arrow{font-size:18px;line-height:1;}
-.btn-text{font-size:11px;font-weight:600;}
+.btn-dn:hover{background:#ff1144;}
+.btn-up:disabled,.btn-dn:disabled{opacity:.4;cursor:not-allowed;}
+.btn-arr{font-size:16px;line-height:1;}
+.btn-lbl{font-size:10px;}
 
-/* Trade history */
-.trade-list{padding:0 14px 14px;}
-.trade-item{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:9px 10px;border-radius:8px;margin-bottom:5px;
+/* trade history list */
+.th-hdr{display:flex;justify-content:space-between;align-items:center;padding:10px 14px 4px;}
+.th-title{font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;}
+.th-count{font-size:10px;color:var(--t3);}
+.trade-list{padding:0 10px 10px;}
+.ti{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 10px;border-radius:8px;margin-bottom:4px;
   background:var(--bg3);border:1px solid var(--b1);
 }
-.ti-left{display:flex;flex-direction:column;gap:2px;}
+.ti-l{display:flex;flex-direction:column;gap:2px;}
 .ti-pair{font-size:12px;font-weight:700;}
-.ti-info{font-size:10px;color:var(--txt3);}
-.ti-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
-.ti-status{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
-.ti-status.won{background:rgba(0,212,170,.15);color:var(--up);}
-.ti-status.lost{background:rgba(255,61,90,.15);color:var(--down);}
-.ti-status.open{background:rgba(255,200,50,.1);color:#ffc832;}
-.ti-status.refunded{background:var(--b1);color:var(--txt2);}
-.ti-amount{font-size:11px;font-family:var(--mono);color:var(--txt2);}
-.ti-settle-btn{
+.ti-meta{font-size:9px;color:var(--t3);}
+.ti-r{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+.badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;}
+.badge.WON{background:var(--tg);color:var(--up);}
+.badge.LOST{background:var(--dg);color:var(--down);}
+.badge.OPEN{background:rgba(245,200,66,.12);color:var(--gold);}
+.badge.REFUNDED{background:var(--b1);color:var(--t2);}
+.ti-amt{font-size:10px;font-family:var(--mono);color:var(--t2);}
+.settle-btn{
   font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;
   border:1px solid var(--teal);color:var(--teal);background:none;
-  cursor:pointer;font-family:var(--font);transition:.15s;margin-top:2px;
+  cursor:pointer;font-family:var(--font);margin-top:2px;
 }
-.ti-settle-btn:hover{background:var(--teal-g);}
+.settle-btn:hover{background:var(--tg);}
+.empty{text-align:center;padding:20px;color:var(--t3);font-size:11px;}
 
-/* ══ BOTTOM NAV ══ */
-.bottomnav{
-  display:flex;height:50px;background:var(--bg2);
-  border-top:1px solid var(--b1);flex-shrink:0;
-}
-.nav-item{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:3px;cursor:pointer;border:none;
-  background:none;color:var(--txt3);transition:.2s;font-family:var(--font);
-}
-.nav-item.active{color:var(--teal);}
-.nav-item:hover{color:var(--txt);}
-.nav-icon{font-size:18px;}
-.nav-label{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+/* ── PROFILE PAGE ── */
+#pgProfile{flex-direction:column;overflow-y:auto;padding:16px;gap:12px;}
+#pgProfile::-webkit-scrollbar{width:4px;}
+#pgProfile::-webkit-scrollbar-thumb{background:var(--b2);}
 
-/* ══ PAGE: PROFILE ══ */
-.page{display:none;flex:1;overflow-y:auto;padding:16px;}
-.page.active{display:block;}
-.page::-webkit-scrollbar{width:4px;}
-.page::-webkit-scrollbar-thumb{background:var(--b2);}
-
-.profile-hero{
-  background:linear-gradient(135deg,var(--bg3) 0%,var(--card) 100%);
-  border:1px solid var(--b1);border-radius:14px;padding:20px;margin-bottom:14px;
-  display:flex;align-items:center;justify-content:space-between;
+/* hero */
+.p-hero{
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(120deg,var(--bg3),var(--card));
+  border:1px solid var(--b1);border-radius:14px;padding:18px;
 }
-.ph-left{display:flex;align-items:center;gap:14px;}
-.ph-avatar{
-  width:52px;height:52px;border-radius:12px;
-  background:linear-gradient(135deg,var(--teal),#0066ff);
+.p-avatar{
+  width:54px;height:54px;border-radius:12px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--teal),#0055ff);
   display:flex;align-items:center;justify-content:center;
-  font-size:20px;font-weight:800;color:#000;
+  font-size:18px;font-weight:800;color:#000;
 }
-.ph-info h3{font-size:15px;font-weight:700;margin-bottom:2px;}
-.ph-info p{font-size:11px;color:var(--txt3);font-family:var(--mono);}
-.ph-badge{
-  padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;
-  background:var(--teal-g);color:var(--teal);border:1px solid var(--teal);
+.p-info h3{font-size:15px;font-weight:700;margin-bottom:3px;}
+.p-info p{font-size:11px;color:var(--t3);font-family:var(--mono);word-break:break-all;}
+.p-net{
+  margin-left:auto;padding:4px 10px;border-radius:6px;font-size:10px;
+  font-weight:700;background:var(--tg);color:var(--teal);border:1px solid var(--teal);white-space:nowrap;
 }
 
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-.stat-card{
-  background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:14px;
-}
-.sc-label{font-size:10px;color:var(--txt3);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;}
-.sc-val{font-size:18px;font-weight:700;font-family:var(--mono);}
-.sc-val.green{color:var(--up);}
-.sc-val.red{color:var(--down);}
-.sc-sub{font-size:10px;color:var(--txt3);margin-top:2px;}
+/* stats */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.stat{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:14px;}
+.stat-lbl{font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px;}
+.stat-val{font-size:18px;font-weight:700;font-family:var(--mono);}
+.stat-sub{font-size:9px;color:var(--t3);margin-top:2px;}
 
-/* Internal wallet card */
-.wallet-card{
-  background:var(--card);border:1px solid var(--b1);border-radius:14px;
-  padding:18px;margin-bottom:14px;
-}
-.wc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+/* wallet card */
+.wcard{background:var(--card);border:1px solid var(--b1);border-radius:14px;padding:16px;}
+.wc-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
 .wc-title{font-size:13px;font-weight:700;}
-.wc-badge{
-  font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;
-  background:var(--teal-g);color:var(--teal);
-}
-.wc-balance{
+.wc-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;background:var(--tg);color:var(--teal);}
+.wc-bal{
   text-align:center;padding:16px;background:var(--bg3);
   border-radius:10px;margin-bottom:14px;
 }
-.wc-bal-label{font-size:11px;color:var(--txt3);margin-bottom:4px;}
-.wc-bal-val{font-size:28px;font-weight:700;font-family:var(--mono);color:var(--teal);}
-.wc-bal-usd{font-size:12px;color:var(--txt3);margin-top:2px;}
+.wc-bal-lbl{font-size:10px;color:var(--t3);margin-bottom:4px;}
+.wc-bal-num{font-size:28px;font-weight:700;font-family:var(--mono);color:var(--teal);}
+.wc-bal-sub{font-size:11px;color:var(--t3);margin-top:2px;}
 
-.deposit-withdraw-row{display:flex;gap:8px;margin-bottom:14px;}
-.dw-input-wrap{
-  flex:1;display:flex;align-items:center;
-  background:var(--bg3);border:1px solid var(--b1);border-radius:9px;padding:0 12px;height:42px;
+.dw-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.dw-inp-wrap{
+  flex:1;display:flex;align-items:center;background:var(--bg3);
+  border:1px solid var(--b1);border-radius:9px;padding:0 11px;height:42px;
 }
-.dw-input-wrap:focus-within{border-color:var(--teal);}
-.dw-input{
-  flex:1;background:none;border:none;outline:none;
-  color:var(--txt);font-size:13px;font-family:var(--mono);
-}
-.dw-cur{font-size:11px;color:var(--txt3);font-weight:600;}
+.dw-inp-wrap:focus-within{border-color:var(--teal);}
+.dw-inp{flex:1;background:none;border:none;outline:none;color:var(--t1);font-size:13px;font-family:var(--mono);}
+.dw-cur{font-size:10px;color:var(--t3);font-weight:700;}
 .dw-btns{display:flex;gap:8px;}
-.dep-btn,.wit-btn{
-  flex:1;height:42px;border-radius:9px;border:none;cursor:pointer;
-  font-size:13px;font-weight:700;font-family:var(--font);transition:.2s;
+.dep-btn{
+  flex:1;height:42px;background:var(--teal);color:#000;border:none;
+  border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:.15s;
 }
-.dep-btn{background:var(--teal);color:#000;}
 .dep-btn:hover{background:var(--teal2);}
-.wit-btn{background:var(--bg3);color:var(--txt);border:1px solid var(--b2);}
+.wit-btn{
+  flex:1;height:42px;background:var(--bg3);color:var(--t1);
+  border:1px solid var(--b2);border-radius:9px;font-size:13px;
+  font-weight:700;cursor:pointer;font-family:var(--font);transition:.15s;
+}
 .wit-btn:hover{border-color:var(--teal);color:var(--teal);}
+.dw-max{font-size:10px;color:var(--teal);cursor:pointer;text-decoration:underline;margin-bottom:8px;display:inline-block;}
 
-.tx-list{display:flex;flex-direction:column;gap:5px;}
-.tx-item{
+/* tx history */
+.sec-hdr{font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;}
+.tx-list{display:flex;flex-direction:column;gap:4px;}
+.tx{
   display:flex;justify-content:space-between;align-items:center;
-  padding:9px 12px;background:var(--bg3);border-radius:8px;
-  border:1px solid var(--b1);
+  padding:9px 12px;background:var(--bg3);border:1px solid var(--b1);border-radius:8px;
 }
-.tx-left{display:flex;flex-direction:column;gap:2px;}
+.tx-l{display:flex;flex-direction:column;gap:2px;}
 .tx-type{font-size:12px;font-weight:600;}
-.tx-time{font-size:10px;color:var(--txt3);}
-.tx-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
-.tx-amount{font-size:12px;font-weight:700;font-family:var(--mono);}
-.tx-hash{font-size:9px;color:var(--teal);cursor:pointer;text-decoration:underline;}
+.tx-time{font-size:9px;color:var(--t3);}
+.tx-r{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
+.tx-amt{font-size:12px;font-weight:700;font-family:var(--mono);}
+.tx-link{font-size:9px;color:var(--teal);cursor:pointer;text-decoration:underline;}
 
-/* Section header */
-.section-hdr{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:10px;
+/* BOTTOM NAV */
+.bnav{
+  display:flex;height:52px;background:var(--bg2);
+  border-top:1px solid var(--b1);flex-shrink:0;
 }
-.section-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt2);}
+.bnav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:3px;border:none;background:none;
+  color:var(--t3);cursor:pointer;font-family:var(--font);transition:.15s;
+}
+.bnav-btn.on{color:var(--teal);}
+.bnav-btn:hover{color:var(--t1);}
+.bnav-ico{font-size:18px;}
+.bnav-lbl{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
 
-/* Modal */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.7);
-  z-index:200;display:none;align-items:center;justify-content:center;
-  backdrop-filter:blur(4px);
+/* MODAL */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);
+  backdrop-filter:blur(6px);z-index:999;
+  display:none;align-items:center;justify-content:center;
 }
-.modal-overlay.open{display:flex;}
+.overlay.open{display:flex;}
 .modal{
   background:var(--bg2);border:1px solid var(--b2);border-radius:16px;
-  padding:24px;width:340px;max-width:90vw;
+  padding:24px;width:320px;max-width:92vw;
 }
-.modal h3{font-size:16px;font-weight:700;margin-bottom:6px;}
-.modal p{font-size:12px;color:var(--txt2);margin-bottom:20px;line-height:1.5;}
+.modal h3{font-size:15px;font-weight:700;margin-bottom:8px;}
+.modal-body{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:20px;white-space:pre-line;}
 .modal-btns{display:flex;gap:10px;}
-.modal-cancel{
-  flex:1;height:42px;background:var(--bg3);border:1px solid var(--b2);
-  border-radius:9px;color:var(--txt);cursor:pointer;font-size:13px;
-  font-weight:600;font-family:var(--font);transition:.2s;
+.m-cancel{
+  flex:1;height:40px;background:var(--bg3);border:1px solid var(--b2);
+  border-radius:8px;color:var(--t1);cursor:pointer;font-size:12px;
+  font-weight:600;font-family:var(--font);
 }
-.modal-cancel:hover{border-color:var(--txt3);}
-.modal-confirm{
-  flex:1;height:42px;background:var(--teal);border:none;
-  border-radius:9px;color:#000;cursor:pointer;font-size:13px;
-  font-weight:700;font-family:var(--font);transition:.2s;
+.m-ok{
+  flex:1;height:40px;background:var(--teal);border:none;
+  border-radius:8px;color:#000;cursor:pointer;font-size:13px;
+  font-weight:700;font-family:var(--font);transition:.15s;
 }
-.modal-confirm:hover{background:var(--teal2);}
+.m-ok:hover{background:var(--teal2);}
 
-/* Toast */
+/* TOAST */
 .toast{
-  position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(20px);
+  position:fixed;bottom:64px;left:50%;transform:translateX(-50%) translateY(10px);
   background:var(--card);border:1px solid var(--b2);border-radius:10px;
-  padding:10px 18px;font-size:13px;font-weight:600;
-  opacity:0;transition:.3s;z-index:300;pointer-events:none;white-space:nowrap;
+  padding:10px 18px;font-size:12px;font-weight:600;
+  opacity:0;transition:.25s;z-index:9999;pointer-events:none;white-space:nowrap;
+  max-width:90vw;text-align:center;
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.toast.success{border-color:var(--teal);color:var(--teal);}
-.toast.error{border-color:var(--down);color:var(--down);}
+.toast.ok{border-color:var(--teal);color:var(--teal);}
+.toast.err{border-color:var(--down);color:var(--down);}
+.toast.warn{border-color:var(--gold);color:var(--gold);}
 
-/* Spinner */
-.spin{
-  display:inline-block;width:14px;height:14px;
-  border:2px solid rgba(0,0,0,.3);border-top-color:#000;
-  border-radius:50%;animation:spin .6s linear infinite;
-}
+/* countdown */
+.cdown{position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--b1);}
+.cdown-fill{height:100%;background:var(--teal);transition:width .5s linear;}
+
+/* loader */
+.loader{display:inline-block;width:12px;height:12px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:spin .5s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-.empty-state{
-  text-align:center;padding:28px 14px;color:var(--txt3);font-size:12px;
+/* not connected overlay */
+.nc-banner{
+  background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.2);
+  border-radius:10px;padding:12px;text-align:center;font-size:12px;color:var(--t2);margin-bottom:10px;
 }
-.empty-icon{font-size:28px;margin-bottom:8px;}
-
-/* Result animation */
-@keyframes pulse-win{0%,100%{box-shadow:0 0 0 0 rgba(0,212,170,.4)}50%{box-shadow:0 0 0 8px rgba(0,212,170,0)}}
-@keyframes pulse-lose{0%,100%{box-shadow:0 0 0 0 rgba(255,61,90,.4)}50%{box-shadow:0 0 0 8px rgba(255,61,90,0)}}
+.nc-banner b{color:var(--teal);cursor:pointer;}
 </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <div class="logo">
-      <div class="logo-mark">ZT</div>
-      <div class="logo-name">Zen<span>Trade</span></div>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo"><div class="logo-box">ZT</div><div class="logo-txt">Zen<b>Trade</b></div></div>
+  <div class="ticker-bar" id="tickerBar"></div>
+  <div class="topbar-r">
+    <button class="conn-btn" id="connBtn" onclick="connectWallet()">Connect Wallet</button>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- MARKET PAGE -->
+  <div class="page show" id="pgMarket">
+
+    <!-- CHART -->
+    <div class="chart-col" style="position:relative;">
+      <div class="chart-bar">
+        <div class="cb-left">
+          <span class="cb-pair" id="cbPair">BTC/USD</span>
+          <span class="cb-price" id="cbPrice">--</span>
+          <span class="cb-chg" id="cbChg"></span>
+        </div>
+        <div class="tf-row">
+          <button class="tf on" onclick="setTF('1m',this)">1m</button>
+          <button class="tf" onclick="setTF('5m',this)">5m</button>
+          <button class="tf" onclick="setTF('15m',this)">15m</button>
+          <button class="tf" onclick="setTF('1h',this)">1H</button>
+        </div>
+      </div>
+      <div id="chartEl"></div>
+      <div class="cdown"><div class="cdown-fill" id="cdownFill" style="width:100%"></div></div>
     </div>
-    <div class="price-bar" id="priceBar"></div>
-    <div class="topbar-right">
-      <div class="wallet-badge" id="walletBadge" onclick="connectWallet()">
-        <div class="wallet-dot" id="walletDot"></div>
-        <span id="walletLabel">Connect Wallet</span>
+
+    <!-- TRADE SIDEBAR -->
+    <div class="trade-side">
+
+      <!-- Duration -->
+      <div class="ts-block">
+        <div class="ts-lbl">Time Frame</div>
+        <div class="dur-section">
+          <div class="dur-title">⚡ SHORT — Random Result</div>
+          <div class="dur-row">
+            <button class="dur-btn on" onclick="pickDur(10,this)">10s</button>
+            <button class="dur-btn" onclick="pickDur(20,this)">20s</button>
+            <button class="dur-btn" onclick="pickDur(50,this)">50s</button>
+            <button class="dur-btn" onclick="pickDur(60,this)">1m</button>
+          </div>
+        </div>
+        <div class="dur-section">
+          <div class="dur-title" style="color:var(--gold);">📈 LONG — Admin Price</div>
+          <div class="dur-row">
+            <button class="dur-btn long" onclick="pickDur(1800,this)">30m</button>
+            <button class="dur-btn long" onclick="pickDur(3600,this)">1H</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Amount -->
+      <div class="ts-block">
+        <div class="ts-lbl">Amount</div>
+        <div class="bal-row">
+          <span class="bal-lbl">Wallet Balance</span>
+          <span class="bal-val" id="sideBalance">-- ZTC</span>
+        </div>
+        <div class="amt-wrap">
+          <input class="amt-inp" id="amtInp" type="number" value="0.01" min="0.001" step="0.001" oninput="calcPayout()"/>
+          <span class="amt-cur">ZTC</span>
+        </div>
+        <div class="quick-row">
+          <button class="quick" onclick="setAmt(0.01)">0.01</button>
+          <button class="quick" onclick="setAmt(0.05)">0.05</button>
+          <button class="quick" onclick="setAmt(0.1)">0.1</button>
+          <button class="quick" onclick="setAmt(0.5)">0.5</button>
+        </div>
+        <div class="payout-row">
+          <span>Profit on win</span>
+          <span class="payout-val" id="payoutPrev">+0.0080 ZTC</span>
+        </div>
+        <div class="trade-btns">
+          <button class="btn-up" id="btnUp" onclick="openTrade(0)">
+            <span class="btn-arr">▲</span>
+            <span class="btn-lbl">UP</span>
+          </button>
+          <button class="btn-dn" id="btnDn" onclick="openTrade(1)">
+            <span class="btn-arr">▼</span>
+            <span class="btn-lbl">DOWN</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Trade History -->
+      <div class="th-hdr">
+        <span class="th-title">My Trades</span>
+        <span class="th-count" id="tCount">0</span>
+      </div>
+      <div class="trade-list" id="tradeList">
+        <div class="empty">Connect wallet to view trades</div>
       </div>
     </div>
   </div>
 
-  <!-- MAIN BODY -->
-  <div class="body" id="mainBody">
+  <!-- PROFILE PAGE -->
+  <div class="page" id="pgProfile">
 
-    <!-- ASSET PANEL -->
-    <div class="asset-panel" id="assetPanel">
-      <button class="asset-btn active" data-asset="BTC" onclick="selectAsset('BTC',this)">
-        <span class="asset-ico">₿</span>
-        <span class="asset-lbl">BTC</span>
-      </button>
-      <button class="asset-btn" data-asset="ETH" onclick="selectAsset('ETH',this)">
-        <span class="asset-ico">Ξ</span>
-        <span class="asset-lbl">ETH</span>
-      </button>
-      <button class="asset-btn" data-asset="BNB" onclick="selectAsset('BNB',this)">
-        <span class="asset-ico">🔶</span>
-        <span class="asset-lbl">BNB</span>
-      </button>
-      <button class="asset-btn" data-asset="XRP" onclick="selectAsset('XRP',this)">
-        <span class="asset-ico">◈</span>
-        <span class="asset-lbl">XRP</span>
-      </button>
+    <!-- not connected -->
+    <div class="nc-banner" id="ncBanner" style="display:none;">
+      Wallet not connected. <b onclick="connectWallet()">Connect now →</b>
     </div>
 
-    <!-- PAGE: MARKET -->
-    <div class="page active" id="pageMarket" style="display:flex;flex:1;overflow:hidden;padding:0;">
-
-      <!-- CHART AREA -->
-      <div class="chart-area">
-        <div class="chart-header">
-          <div class="chart-asset">
-            <span class="chart-asset-name" id="chartAssetName">BTC/USD</span>
-            <span class="chart-price-big" id="chartPriceBig">--</span>
-            <span class="chart-price-chg" id="chartPriceChg"></span>
-          </div>
-          <div class="tf-tabs">
-            <button class="tf-tab active" onclick="setTF('1m',this)">1m</button>
-            <button class="tf-tab" onclick="setTF('5m',this)">5m</button>
-            <button class="tf-tab" onclick="setTF('15m',this)">15m</button>
-            <button class="tf-tab" onclick="setTF('1h',this)">1H</button>
-          </div>
-        </div>
-        <div id="chart"></div>
-        <div class="countdown-bar">
-          <div class="countdown-fill" id="countdownFill" style="width:100%"></div>
-        </div>
+    <!-- Hero -->
+    <div class="p-hero">
+      <div class="p-avatar" id="pAvatar">?</div>
+      <div class="p-info">
+        <h3 id="pName">Not Connected</h3>
+        <p id="pAddr">Connect your wallet to continue</p>
       </div>
+      <div class="p-net">ZenChain #8408</div>
+    </div>
 
-      <!-- TRADE PANEL -->
-      <div class="trade-panel">
-        <!-- Duration -->
-        <div class="tp-section">
-          <div class="tp-label">Time Frame</div>
-
-          <div class="dur-group">
-            <div class="dur-group-title">⚡ SHORT (Random)</div>
-            <div class="dur-tabs">
-              <button class="dur-tab active" onclick="selectDur(10,this)">10s</button>
-              <button class="dur-tab" onclick="selectDur(20,this)">20s</button>
-              <button class="dur-tab" onclick="selectDur(50,this)">50s</button>
-              <button class="dur-tab" onclick="selectDur(60,this)">1m</button>
-            </div>
-          </div>
-
-          <div class="dur-group">
-            <div class="dur-group-title" style="color:#ffc832;">📈 LONG (Market Price)</div>
-            <div class="dur-tabs">
-              <button class="dur-tab long-dur" onclick="selectDur(1800,this)">30m</button>
-              <button class="dur-tab long-dur" onclick="selectDur(3600,this)">1H</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Amount -->
-        <div class="tp-section">
-          <div class="tp-label">Trade Amount</div>
-          <div class="wallet-balance-row">
-            <span class="wb-label">Wallet Balance</span>
-            <span class="wb-val" id="tradeWalletBal">0.0000 ZTC</span>
-          </div>
-          <div class="amount-row">
-            <div class="amount-input-wrap">
-              <input class="amount-input" id="amountInput" type="number" value="0.01" min="0.001" step="0.001"/>
-              <span class="amount-currency">ZTC</span>
-            </div>
-          </div>
-          <div class="amount-presets">
-            <button class="preset-btn" onclick="setAmt(0.01)">0.01</button>
-            <button class="preset-btn" onclick="setAmt(0.05)">0.05</button>
-            <button class="preset-btn" onclick="setAmt(0.1)">0.1</button>
-            <button class="preset-btn" onclick="setAmt(0.5)">0.5</button>
-          </div>
-        </div>
-
-        <!-- Payout + Buttons -->
-        <div class="tp-section">
-          <div class="payout-row">
-            <span>Payout (Win 80%)</span>
-            <span class="payout-val" id="payoutPreview">+0.0080 ZTC</span>
-          </div>
-          <div class="trade-btns">
-            <button class="btn-up" id="btnUp" onclick="placeTrade(0)">
-              <span class="btn-arrow">▲</span>
-              <span class="btn-text">UP</span>
-            </button>
-            <button class="btn-dn" id="btnDn" onclick="placeTrade(1)">
-              <span class="btn-arrow">▼</span>
-              <span class="btn-text">DOWN</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Trade History -->
-        <div class="section-hdr" style="padding:14px 14px 0;">
-          <span class="section-title">My Trades</span>
-          <span style="font-size:10px;color:var(--txt3)" id="tradeCount">0 trades</span>
-        </div>
-        <div class="trade-list" id="tradeList">
-          <div class="empty-state">
-            <div class="empty-icon">📊</div>
-            Connect wallet to see trades
-          </div>
-        </div>
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-lbl">Total Trades</div>
+        <div class="stat-val" id="sTrades">0</div>
+        <div class="stat-sub">All time</div>
+      </div>
+      <div class="stat">
+        <div class="stat-lbl">Win Rate</div>
+        <div class="stat-val up" id="sWinRate">0%</div>
+        <div class="stat-sub">Settled trades</div>
+      </div>
+      <div class="stat">
+        <div class="stat-lbl">Total Won</div>
+        <div class="stat-val up" id="sWon">0</div>
+        <div class="stat-sub">ZTC received</div>
+      </div>
+      <div class="stat">
+        <div class="stat-lbl">Total Lost</div>
+        <div class="stat-val dn" id="sLost">0</div>
+        <div class="stat-sub">ZTC lost</div>
       </div>
     </div>
 
-    <!-- PAGE: PROFILE -->
-    <div class="page" id="pageProfile" style="display:none;flex:1;">
-
-      <!-- Hero -->
-      <div class="profile-hero">
-        <div class="ph-left">
-          <div class="ph-avatar" id="profileAvatar">?</div>
-          <div class="ph-info">
-            <h3 id="profileName">Not Connected</h3>
-            <p id="profileAddr">Connect your wallet to get started</p>
-          </div>
-        </div>
-        <div class="ph-badge" id="profileNetwork">ZenChain</div>
+    <!-- Wallet Card -->
+    <div class="wcard">
+      <div class="wc-hdr">
+        <span class="wc-title">🏦 Trading Wallet</span>
+        <span class="wc-badge">Internal ZTC</span>
+      </div>
+      <div class="wc-bal">
+        <div class="wc-bal-lbl">Available Balance</div>
+        <div class="wc-bal-num" id="wBal">0.0000</div>
+        <div class="wc-bal-sub">ZTC on ZenChain</div>
       </div>
 
-      <!-- Stats -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="sc-label">Total Trades</div>
-          <div class="sc-val" id="statTrades">0</div>
-          <div class="sc-sub">All time</div>
-        </div>
-        <div class="stat-card">
-          <div class="sc-label">Win Rate</div>
-          <div class="sc-val green" id="statWinRate">0%</div>
-          <div class="sc-sub">Based on settled</div>
-        </div>
-        <div class="stat-card">
-          <div class="sc-label">Total Won</div>
-          <div class="sc-val green" id="statWon">0 ZTC</div>
-          <div class="sc-sub">Payout received</div>
-        </div>
-        <div class="stat-card">
-          <div class="sc-label">Total Lost</div>
-          <div class="sc-val red" id="statLost">0 ZTC</div>
-          <div class="sc-sub">Amount lost</div>
+      <div class="dw-row">
+        <div class="dw-inp-wrap">
+          <input class="dw-inp" id="dwAmt" type="number" placeholder="Enter ZTC amount" min="0.001" step="0.001"/>
+          <span class="dw-cur">ZTC</span>
         </div>
       </div>
-
-      <!-- Internal Wallet -->
-      <div class="wallet-card">
-        <div class="wc-header">
-          <span class="wc-title">🏦 Trading Wallet</span>
-          <span class="wc-badge">Internal</span>
-        </div>
-        <div class="wc-balance">
-          <div class="wc-bal-label">Available Balance</div>
-          <div class="wc-bal-val" id="profileBalance">0.0000</div>
-          <div class="wc-bal-usd" id="profileBalUsd">≈ $0.00</div>
-        </div>
-
-        <div class="deposit-withdraw-row">
-          <div class="dw-input-wrap">
-            <input class="dw-input" id="dwAmount" type="number" placeholder="0.0" min="0.001" step="0.001"/>
-            <span class="dw-cur">ZTC</span>
-          </div>
-        </div>
-        <div class="dw-btns">
-          <button class="dep-btn" onclick="doDeposit()">⬇ Deposit</button>
-          <button class="wit-btn" onclick="doWithdraw()">⬆ Withdraw</button>
-        </div>
+      <span class="dw-max" onclick="setDwMax()">Use max balance</span>
+      <div class="dw-btns">
+        <button class="dep-btn" onclick="doDeposit()">⬇ Deposit</button>
+        <button class="wit-btn" onclick="doWithdraw()">⬆ Withdraw</button>
       </div>
+    </div>
 
-      <!-- Transaction History -->
-      <div class="section-hdr">
-        <span class="section-title">Transaction History</span>
-      </div>
+    <!-- TX History -->
+    <div>
+      <div class="sec-hdr">Transaction History</div>
       <div class="tx-list" id="txList">
-        <div class="empty-state">
-          <div class="empty-icon">📋</div>
-          No transactions yet
-        </div>
+        <div class="empty">No transactions yet</div>
       </div>
     </div>
 
   </div>
-
-  <!-- BOTTOM NAV -->
-  <div class="bottomnav">
-    <button class="nav-item active" id="navMarket" onclick="goPage('market')">
-      <span class="nav-icon">📈</span>
-      <span class="nav-label">Market</span>
-    </button>
-    <button class="nav-item" id="navProfile" onclick="goPage('profile')">
-      <span class="nav-icon">👤</span>
-      <span class="nav-label">Profile</span>
-    </button>
-  </div>
-
 </div>
 
-<!-- Modal -->
-<div class="modal-overlay" id="modalOverlay">
+<!-- BOTTOM NAV -->
+<div class="bnav">
+  <button class="bnav-btn on" id="navM" onclick="goPage('market')">
+    <span class="bnav-ico">📈</span>
+    <span class="bnav-lbl">Market</span>
+  </button>
+  <button class="bnav-btn" id="navP" onclick="goPage('profile')">
+    <span class="bnav-ico">👤</span>
+    <span class="bnav-lbl">Profile</span>
+  </button>
+</div>
+
+</div><!-- .app -->
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
   <div class="modal">
-    <h3 id="modalTitle">Confirm Trade</h3>
-    <p id="modalBody">Are you sure?</p>
+    <h3 id="mTitle">Confirm</h3>
+    <div class="modal-body" id="mBody"></div>
     <div class="modal-btns">
-      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
-      <button class="modal-confirm" id="modalConfirm">Confirm</button>
+      <button class="m-cancel" onclick="closeModal()">Cancel</button>
+      <button class="m-ok" id="mOk">Confirm</button>
     </div>
   </div>
 </div>
 
-<!-- Toast -->
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  CONFIG
-// ════════════════════════════════════════════════
-const CONTRACT_ADDRESS = "0xdd7e0B4C081ebE6c6fdBf78817adCCCa85E0741E";
-const ZENCHAIN_ID = 8408;
-const ZENCHAIN_PARAMS = {
-  chainId: "0x20D8",
+// ═══════════════════════════════════════════
+const CONTRACT = "0xdd7e0B4C081ebE6c6fdBf78817adCCCa85E0741E";
+const CHAIN_ID = 8408;
+const CHAIN_HEX = "0x20D8";
+const CHAIN_PARAMS = {
+  chainId: CHAIN_HEX,
   chainName: "ZenChain Testnet",
-  nativeCurrency: { name: "ZTC", symbol: "ZTC", decimals: 18 },
+  nativeCurrency: { name:"ZTC", symbol:"ZTC", decimals:18 },
   rpcUrls: ["https://zenchain-testnet.api.onfinality.io/public"],
   blockExplorerUrls: ["https://zentrace.io"]
 };
-
 const ABI = [
   "function deposit() external payable",
   "function withdraw(uint256 amount) external",
-  "function openTrade(uint256 amount, uint8 direction, uint256 duration) external returns (uint256)",
+  "function openTrade(uint256 amount,uint8 direction,uint256 duration) external returns(uint256)",
   "function settleShortTrade(uint256 tradeId) external",
-  "function getWallet(address user) external view returns (tuple(uint256 balance,uint256 totalDeposited,uint256 totalWithdrawn,uint256 totalWon,uint256 totalLost,uint256 tradeCount))",
-  "function getUserRecentTrades(address user, uint256 n) external view returns (tuple(uint256 id,address trader,uint256 amount,uint8 direction,uint8 mode,uint256 openPrice,uint256 closePrice,uint256 openTime,uint256 closeTime,uint8 status,uint256 payout,bytes32 randomSeed)[])",
-  "event Deposited(address indexed user, uint256 amount)",
-  "event Withdrawn(address indexed user, uint256 amount)",
-  "event TradeClosed(uint256 indexed id, address indexed trader, uint8 status, uint256 payout)"
+  "function getWallet(address user) external view returns(tuple(uint256 balance,uint256 totalDeposited,uint256 totalWithdrawn,uint256 totalWon,uint256 totalLost,uint256 tradeCount))",
+  "function getUserRecentTrades(address user,uint256 n) external view returns(tuple(uint256 id,address trader,uint256 amount,uint8 direction,uint8 mode,uint256 openPrice,uint256 closePrice,uint256 openTime,uint256 closeTime,uint8 status,uint256 payout,bytes32 randomSeed)[])",
+  "event Deposited(address indexed user,uint256 amount)",
+  "event Withdrawn(address indexed user,uint256 amount)",
+  "event TradeClosed(uint256 indexed id,address indexed trader,uint8 status,uint256 payout)",
+  "event TradeOpened(uint256 indexed id,address indexed trader,uint8 dir,uint8 mode,uint256 amount,uint256 closeTime)"
 ];
 
-// ════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  STATE
-// ════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 let provider, signer, contract, account;
-let currentAsset = "BTC";
-let currentDur = 10;
-let selectedDir = null;
-let chartInstance, candleSeries;
-let prices = { BTC: 0, ETH: 0, BNB: 0, XRP: 0 };
-let priceHistory = { BTC: [], ETH: [], BNB: [], XRP: [] };
+let curAsset = "BTC";
+let curDur = 10;
+let curTF = "1m";
+let prices = {BTC:0,ETH:0,BNB:0,XRP:0};
+let chg24 = {BTC:0,ETH:0,BNB:0,XRP:0};
+let priceHist = {BTC:[],ETH:[],BNB:[],XRP:[]};
 let txHistory = [];
-let activeTrades = [];
-let currentTF = "1m";
-let countdownInterval;
-let pendingTradeDir = null;
+let chart, candleSeries;
+let cdownTimer;
+let internalBalance = 0;
 
-const COINGECKO_IDS = { BTC:"bitcoin", ETH:"ethereum", BNB:"binancecoin", XRP:"ripple" };
+const ASSETS = ["BTC","ETH","BNB","XRP"];
+const CGIDS = {BTC:"bitcoin",ETH:"ethereum",BNB:"binancecoin",XRP:"ripple"};
+const BASE_PRICES = {BTC:65000,ETH:3200,BNB:380,XRP:0.55};
 
-// ════════════════════════════════════════════════
-//  WALLET
-// ════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  WALLET CONNECT
+// ═══════════════════════════════════════════
 async function connectWallet() {
-  if (!window.ethereum) { showToast("MetaMask not found", "error"); return; }
+  if (!window.ethereum) {
+    toast("MetaMask not found! Install it first.", "err"); return;
+  }
   try {
-    await window.ethereum.request({ method: "eth_requestAccounts" });
+    await window.ethereum.request({method:"eth_requestAccounts"});
     provider = new ethers.BrowserProvider(window.ethereum);
 
-    const network = await provider.getNetwork();
-    if (Number(network.chainId) !== ZENCHAIN_ID) {
+    // Switch/add ZenChain
+    const net = await provider.getNetwork();
+    if (Number(net.chainId) !== CHAIN_ID) {
       try {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x20D8" }]
-        });
-      } catch (e) {
+        await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:CHAIN_HEX}]});
+      } catch(e) {
         if (e.code === 4902) {
-          await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [ZENCHAIN_PARAMS]
-          });
-        } else { throw e; }
+          await window.ethereum.request({method:"wallet_addEthereumChain",params:[CHAIN_PARAMS]});
+        } else throw e;
       }
       provider = new ethers.BrowserProvider(window.ethereum);
     }
 
     signer = await provider.getSigner();
     account = await signer.getAddress();
-    contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+    contract = new ethers.Contract(CONTRACT, ABI, signer);
 
-    const short = account.slice(0,6) + "..." + account.slice(-4);
-    document.getElementById("walletLabel").textContent = short;
-    document.getElementById("walletDot").className = "wallet-dot on";
+    // Update UI
+    const short = account.slice(0,6)+"..."+account.slice(-4);
+    const btn = document.getElementById("connBtn");
+    btn.textContent = short;
+    btn.className = "conn-btn connected";
 
-    updateProfileUI();
-    loadWalletData();
-    listenEvents();
-    showToast("Wallet connected ✓", "success");
+    updateProfileHero();
+    await loadWalletData();
+    setupEventListeners();
+    toast("Wallet connected ✓", "ok");
 
-    window.ethereum.on("accountsChanged", () => location.reload());
-    window.ethereum.on("chainChanged", () => location.reload());
+    window.ethereum.on("accountsChanged", ()=>location.reload());
+    window.ethereum.on("chainChanged", ()=>location.reload());
   } catch(e) {
-    showToast(e.message || "Connection failed", "error");
+    toast(e.message?.slice(0,60) || "Connection failed", "err");
   }
+}
+
+function updateProfileHero() {
+  if (!account) return;
+  document.getElementById("pAvatar").textContent = account.slice(2,4).toUpperCase();
+  document.getElementById("pName").textContent = account.slice(0,6)+"..."+account.slice(-4);
+  document.getElementById("pAddr").textContent = account;
+  document.getElementById("ncBanner").style.display = "none";
 }
 
 async function loadWalletData() {
   if (!contract || !account) return;
   try {
     const w = await contract.getWallet(account);
-    const bal = parseFloat(ethers.formatEther(w.balance));
-    updateBalanceUI(bal, w);
+    internalBalance = parseFloat(ethers.formatEther(w.balance));
+    updateBalUI(internalBalance, w);
 
     const trades = await contract.getUserRecentTrades(account, 20);
     renderTrades(trades);
-  } catch(e) { console.log("wallet data:", e.message); }
+  } catch(e) { console.warn("loadWalletData:", e.message); }
 }
 
-function updateBalanceUI(bal, w) {
+function updateBalUI(bal, w) {
   const fmt = bal.toFixed(4) + " ZTC";
-  document.getElementById("tradeWalletBal").textContent = fmt;
-  document.getElementById("profileBalance").textContent = bal.toFixed(4);
-  const ztcUsd = prices[currentAsset] > 0 ? (bal * 0.01).toFixed(2) : "0.00";
-  document.getElementById("profileBalUsd").textContent = `≈ $${ztcUsd}`;
-
-  if(w) {
-    document.getElementById("statTrades").textContent = w.tradeCount.toString();
-    const won = parseFloat(ethers.formatEther(w.totalWon));
+  document.getElementById("sideBalance").textContent = fmt;
+  document.getElementById("wBal").textContent = bal.toFixed(4);
+  if (w) {
+    document.getElementById("sTrades").textContent = Number(w.tradeCount).toString();
+    const won  = parseFloat(ethers.formatEther(w.totalWon));
     const lost = parseFloat(ethers.formatEther(w.totalLost));
-    document.getElementById("statWon").textContent = won.toFixed(4) + " ZTC";
-    document.getElementById("statLost").textContent = lost.toFixed(4) + " ZTC";
+    document.getElementById("sWon").textContent  = won.toFixed(4) + " ZTC";
+    document.getElementById("sLost").textContent = lost.toFixed(4) + " ZTC";
     const total = Number(w.tradeCount);
-    const wonTrades = won > 0 ? Math.round((won/(won+lost))*total) : 0;
-    const wr = total > 0 ? Math.round((wonTrades/total)*100) : 0;
-    document.getElementById("statWinRate").textContent = wr + "%";
+    const wr = total > 0 ? Math.round((won/(won+lost||1))*100) : 0;
+    document.getElementById("sWinRate").textContent = wr + "%";
   }
 }
 
-function updateProfileUI() {
-  if (!account) return;
-  document.getElementById("profileName").textContent = account.slice(0,6)+"..."+account.slice(-4);
-  document.getElementById("profileAddr").textContent = account;
-  document.getElementById("profileAvatar").textContent = account.slice(2,4).toUpperCase();
-  document.getElementById("profileNetwork").textContent = "ZenChain #8408";
-}
-
-// ════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  DEPOSIT / WITHDRAW
-// ════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 async function doDeposit() {
-  if (!contract) { showToast("Connect wallet first", "error"); return; }
-  const val = parseFloat(document.getElementById("dwAmount").value);
-  if (!val || val <= 0) { showToast("Enter amount", "error"); return; }
+  if (!contract) { toast("Connect wallet first", "warn"); return; }
+  const val = parseFloat(document.getElementById("dwAmt").value);
+  if (!val || val < 0.001) { toast("Minimum 0.001 ZTC", "warn"); return; }
 
-  showModal(
-    "Confirm Deposit",
-    `Deposit ${val} ZTC into your trading wallet?`,
+  showModal("Confirm Deposit",
+    `Amount: ${val} ZTC\nThis will add ZTC to your internal trading wallet.`,
     async () => {
       try {
-        const tx = await contract.deposit({ value: ethers.parseEther(val.toString()) });
-        showToast("Depositing...", "success");
-        await tx.wait();
-        showToast(`Deposited ${val} ZTC ✓`, "success");
-        addTx("Deposit", val, tx.hash);
-        loadWalletData();
-      } catch(e) { showToast(e.reason || e.message || "Failed", "error"); }
+        const tx = await contract.deposit({value: ethers.parseEther(val.toString())});
+        toast("Depositing... please wait", "ok");
+        const rc = await tx.wait();
+        toast(`✅ Deposited ${val} ZTC`, "ok");
+        addTx("Deposit", val, tx.hash, true);
+        await loadWalletData();
+      } catch(e) { toast(e.reason || e.message?.slice(0,60) || "Failed", "err"); }
     }
   );
 }
 
 async function doWithdraw() {
-  if (!contract) { showToast("Connect wallet first", "error"); return; }
-  const val = parseFloat(document.getElementById("dwAmount").value);
-  if (!val || val <= 0) { showToast("Enter amount", "error"); return; }
+  if (!contract) { toast("Connect wallet first", "warn"); return; }
+  const val = parseFloat(document.getElementById("dwAmt").value);
+  if (!val || val < 0.001) { toast("Minimum 0.001 ZTC", "warn"); return; }
+  if (val > internalBalance) { toast("Insufficient balance", "err"); return; }
 
-  showModal(
-    "Confirm Withdraw",
-    `Withdraw ${val} ZTC to your MetaMask wallet?`,
+  showModal("Confirm Withdraw",
+    `Amount: ${val} ZTC\nZTC will be sent to your MetaMask wallet.`,
     async () => {
       try {
         const tx = await contract.withdraw(ethers.parseEther(val.toString()));
-        showToast("Withdrawing...", "success");
+        toast("Withdrawing...", "ok");
         await tx.wait();
-        showToast(`Withdrawn ${val} ZTC ✓`, "success");
-        addTx("Withdraw", val, tx.hash);
-        loadWalletData();
-      } catch(e) { showToast(e.reason || e.message || "Failed", "error"); }
+        toast(`✅ Withdrawn ${val} ZTC`, "ok");
+        addTx("Withdraw", val, tx.hash, false);
+        await loadWalletData();
+      } catch(e) { toast(e.reason || e.message?.slice(0,60) || "Failed", "err"); }
     }
   );
 }
 
-// ════════════════════════════════════════════════
+function setDwMax() {
+  document.getElementById("dwAmt").value = internalBalance.toFixed(4);
+}
+
+// ═══════════════════════════════════════════
 //  TRADE
-// ════════════════════════════════════════════════
-async function placeTrade(dir) {
-  if (!contract) { showToast("Connect wallet first", "error"); return; }
-  const amt = parseFloat(document.getElementById("amountInput").value);
-  if (!amt || amt < 0.001) { showToast("Minimum 0.001 ZTC", "error"); return; }
+// ═══════════════════════════════════════════
+async function openTrade(dir) {
+  if (!contract) { toast("Connect wallet first", "warn"); return; }
+  const amt = parseFloat(document.getElementById("amtInp").value);
+  if (!amt || amt < 0.001) { toast("Min 0.001 ZTC", "warn"); return; }
+  if (amt > internalBalance) { toast("Insufficient wallet balance", "err"); return; }
 
-  const dirStr = dir === 0 ? "UP ▲" : "DOWN ▼";
-  const durStr = formatDuration(currentDur);
-  const mode = currentDur <= 60 ? "SHORT (Random)" : "LONG (Market)";
-  const payout = (amt * 0.8).toFixed(4);
+  const dirStr = dir === 0 ? "▲ UP" : "▼ DOWN";
+  const dur = formatDur(curDur);
+  const mode = curDur <= 60 ? "SHORT (Random)" : "LONG (Admin Price)";
+  const profit = (amt * 0.8).toFixed(4);
 
-  showModal(
-    `Place ${dirStr} Trade`,
-    `Asset: ${currentAsset}/USD\nAmount: ${amt} ZTC\nDuration: ${durStr}\nMode: ${mode}\nPotential profit: +${payout} ZTC`,
+  showModal(`Place ${dirStr} Trade`,
+    `Asset: ${curAsset}/USD\nDirection: ${dirStr}\nAmount: ${amt} ZTC\nDuration: ${dur}\nMode: ${mode}\nMax profit: +${profit} ZTC`,
     async () => {
       document.getElementById("btnUp").disabled = true;
       document.getElementById("btnDn").disabled = true;
       try {
         const tx = await contract.openTrade(
-          ethers.parseEther(amt.toString()),
-          dir,
-          currentDur
+          ethers.parseEther(amt.toString()), dir, curDur
         );
-        showToast("Trade opening...", "success");
-        const receipt = await tx.wait();
-        showToast(`Trade opened ✓ (${dirStr})`, "success");
-        addTx(`Trade ${dirStr} ${currentAsset}`, amt, tx.hash);
-        loadWalletData();
+        toast("Opening trade...", "ok");
+        const rc = await tx.wait();
 
-        // Auto-settle short trades
-        if (currentDur <= 60) {
+        // Parse trade ID from event
+        let tradeId = null;
+        const iface = new ethers.Interface(ABI);
+        for (const log of rc.logs) {
+          try {
+            const ev = iface.parseLog(log);
+            if (ev?.name === "TradeOpened") { tradeId = Number(ev.args[0]); break; }
+          } catch {}
+        }
+
+        toast(`✅ Trade opened! ID: ${tradeId || "?"}`, "ok");
+        addTx(`Trade ${dirStr} ${curAsset}`, amt, tx.hash, false);
+        await loadWalletData();
+
+        // Auto-settle short trades after expiry
+        if (curDur <= 60 && tradeId) {
           setTimeout(async () => {
             try {
-              const tradeId = await getLastTradeId(receipt);
-              if (tradeId) {
-                const settleTx = await contract.settleShortTrade(tradeId);
-                await settleTx.wait();
-                loadWalletData();
-                showToast("Trade settled!", "success");
-              }
-            } catch(e) { console.log("settle:", e.message); }
-          }, (currentDur + 3) * 1000);
+              toast("Auto-settling trade...", "warn");
+              const stx = await contract.settleShortTrade(tradeId);
+              await stx.wait();
+              toast("Trade settled!", "ok");
+              await loadWalletData();
+            } catch(e) { console.warn("auto-settle:", e.message); }
+          }, (curDur + 4) * 1000);
         }
       } catch(e) {
-        showToast(e.reason || e.message || "Trade failed", "error");
+        toast(e.reason || e.message?.slice(0,60) || "Trade failed", "err");
       } finally {
         document.getElementById("btnUp").disabled = false;
         document.getElementById("btnDn").disabled = false;
@@ -856,373 +774,349 @@ async function placeTrade(dir) {
   );
 }
 
-async function getLastTradeId(receipt) {
-  try {
-    // Parse TradeOpened event from logs
-    const iface = new ethers.Interface(ABI);
-    for (const log of receipt.logs) {
-      try {
-        const parsed = iface.parseLog(log);
-        if (parsed && parsed.name === "TradeOpened") return parsed.args[0];
-      } catch(e) {}
-    }
-  } catch(e) {}
-  return null;
-}
-
-function renderTrades(tradeList) {
+function renderTrades(list) {
   const el = document.getElementById("tradeList");
-  document.getElementById("tradeCount").textContent = tradeList.length + " trades";
-
-  if (!tradeList.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div>No trades yet</div>';
+  document.getElementById("tCount").textContent = list.length;
+  if (!list.length) {
+    el.innerHTML = '<div class="empty">No trades yet</div>';
     return;
   }
-
-  const STATUS = ["OPEN","WON","LOST","REFUNDED"];
+  const ST = ["OPEN","WON","LOST","REFUNDED"];
   const DIR = ["▲ UP","▼ DOWN"];
-  const MODE = ["SHORT","LONG"];
+  const now = Math.floor(Date.now()/1000);
 
-  el.innerHTML = tradeList.map(t => {
-    const status = STATUS[t.status] || "?";
-    const dir = DIR[t.direction] || "?";
-    const mode = MODE[t.mode] || "?";
+  el.innerHTML = [...list].reverse().slice(0,15).map(t => {
+    const st = ST[Number(t.status)] || "?";
+    const dir = DIR[Number(t.direction)] || "?";
     const amt = parseFloat(ethers.formatEther(t.amount)).toFixed(4);
-    const payout = t.payout > 0 ? parseFloat(ethers.formatEther(t.payout)).toFixed(4) : null;
-    const timeLeft = Number(t.closeTime) - Math.floor(Date.now()/1000);
-    const expired = timeLeft <= 0;
-    const canSettle = t.status == 0 && t.mode == 0 && expired;
+    const payout = Number(t.payout) > 0 ? parseFloat(ethers.formatEther(t.payout)).toFixed(4) : null;
+    const expired = now >= Number(t.closeTime);
+    const canSettle = Number(t.status) === 0 && Number(t.mode) === 0 && expired;
+    const dirColor = Number(t.direction) === 0 ? "var(--up)" : "var(--down)";
+    const timeLeft = Number(t.closeTime) - now;
 
-    return `
-    <div class="trade-item">
-      <div class="ti-left">
-        <span class="ti-pair" style="color:${t.direction==0?'var(--up)':'var(--down)'}">${dir} ${currentAsset}</span>
-        <span class="ti-info">${mode} · ${amt} ZTC</span>
-        ${canSettle ? `<button class="ti-settle-btn" onclick="settleShort(${t.id})">Settle</button>` : ''}
+    return `<div class="ti">
+      <div class="ti-l">
+        <span class="ti-pair" style="color:${dirColor}">${dir} ${curAsset}</span>
+        <span class="ti-meta">${Number(t.mode)===0?"SHORT":"LONG"} · ${amt} ZTC</span>
+        ${canSettle ? `<button class="settle-btn" onclick="manualSettle(${Number(t.id)})">Settle Now</button>` : ""}
+        ${!expired && Number(t.status)===0 ? `<span class="ti-meta">${timeLeft}s left</span>` : ""}
       </div>
-      <div class="ti-right">
-        <span class="ti-status ${status.toLowerCase()}">${status}</span>
-        <span class="ti-amount">${payout ? '+'+payout : '-'+amt} ZTC</span>
-        ${!expired ? `<span class="ti-info">${formatDuration(timeLeft)} left</span>` : ''}
+      <div class="ti-r">
+        <span class="badge ${st}">${st}</span>
+        <span class="ti-amt">${payout ? '+'+payout : amt} ZTC</span>
       </div>
     </div>`;
   }).join("");
 }
 
-async function settleShort(tradeId) {
+async function manualSettle(tradeId) {
   if (!contract) return;
   try {
+    toast("Settling...", "warn");
     const tx = await contract.settleShortTrade(tradeId);
-    showToast("Settling...", "success");
     await tx.wait();
-    showToast("Settled ✓", "success");
-    loadWalletData();
-  } catch(e) { showToast(e.reason || "Failed", "error"); }
+    toast("✅ Settled!", "ok");
+    await loadWalletData();
+  } catch(e) { toast(e.reason || "Settle failed", "err"); }
 }
 
-function listenEvents() {
+function setupEventListeners() {
   if (!contract || !account) return;
-  contract.on("TradeClosed", (id, trader, status, payout) => {
-    if (trader.toLowerCase() === account.toLowerCase()) {
-      const st = ["OPEN","WON","LOST","REFUNDED"][status] || "?";
+  try {
+    contract.on("TradeClosed", (id, trader, status, payout) => {
+      if (trader.toLowerCase() !== account.toLowerCase()) return;
+      const st = ["OPEN","WON","LOST","REFUNDED"][Number(status)] || "?";
       const p = parseFloat(ethers.formatEther(payout)).toFixed(4);
-      showToast(st === "WON" ? `🎉 WON! +${p} ZTC` : st === "LOST" ? `❌ LOST` : `↩ Refunded`, st === "WON" ? "success" : "error");
+      if (st === "WON") toast(`🎉 WON! +${p} ZTC`, "ok");
+      else if (st === "LOST") toast(`❌ LOST`, "err");
+      else toast(`↩ Refunded ${p} ZTC`, "warn");
       loadWalletData();
-    }
-  });
+    });
+  } catch(e) {}
 }
 
-// ════════════════════════════════════════════════
-//  PRICE FEED (CoinGecko)
-// ════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  PRICE FEED
+// ═══════════════════════════════════════════
 async function fetchPrices() {
   try {
-    const ids = Object.values(COINGECKO_IDS).join(",");
-    const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
-    const data = await r.json();
-    for (const [sym, id] of Object.entries(COINGECKO_IDS)) {
-      if (data[id]) {
-        prices[sym] = data[id].usd;
-        updatePriceBar(sym, data[id].usd, data[id].usd_24h_change || 0);
+    const ids = Object.values(CGIDS).join(",");
+    const r = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`,
+      {signal: AbortSignal.timeout(8000)}
+    );
+    const d = await r.json();
+    for (const [sym, id] of Object.entries(CGIDS)) {
+      if (d[id]) {
+        prices[sym] = d[id].usd;
+        chg24[sym]  = d[id].usd_24h_change || 0;
       }
     }
-    updateChartPrice();
-  } catch(e) { simulatePrices(); }
-}
-
-function simulatePrices() {
-  const base = {BTC:65000,ETH:3200,BNB:380,XRP:0.55};
-  for (const sym in base) {
-    const chg = (Math.random()-0.5)*0.002;
-    prices[sym] = prices[sym] > 0 ? prices[sym]*(1+chg) : base[sym];
+    buildTickers();
+    updateChartBar();
+  } catch(e) {
+    // simulate if API fails
+    for (const sym of ASSETS) {
+      const base = prices[sym] || BASE_PRICES[sym];
+      prices[sym] = base * (1 + (Math.random()-0.49)*0.001);
+    }
+    buildTickers();
+    updateChartBar();
   }
-  updateChartPrice();
-  updatePriceBar(currentAsset, prices[currentAsset], 0);
 }
 
-function updatePriceBar(sym, price, chg) {
-  let el = document.getElementById("pb_"+sym);
-  if (!el) {
-    el = document.createElement("div");
-    el.id = "pb_"+sym;
-    el.className = "price-item";
-    document.getElementById("priceBar").appendChild(el);
+function buildTickers() {
+  const bar = document.getElementById("tickerBar");
+  bar.innerHTML = "";
+  for (const sym of ASSETS) {
+    const p = prices[sym];
+    const c = chg24[sym] || 0;
+    const cls = curAsset === sym ? "ticker sel" : "ticker";
+    const chgCls = c >= 0 ? "up" : "dn";
+    const chgStr = (c>=0?"+":"") + c.toFixed(2) + "%";
+    bar.innerHTML += `
+      <div class="${cls}" onclick="pickAsset('${sym}')">
+        <span class="t-sym">${sym}/USD</span>
+        <span class="t-price">${fmtPrice(sym,p)}</span>
+        <span class="t-chg ${chgCls}">${chgStr}</span>
+      </div>`;
   }
-  const chgClass = chg >= 0 ? "chg-up" : "chg-dn";
-  const chgStr = (chg >= 0 ? "+" : "") + chg.toFixed(2) + "%";
-  el.innerHTML = `
-    <span class="price-sym">${sym}/USD</span>
-    <span class="price-val">${formatPrice(sym, price)}</span>
-    <span class="price-chg ${chgClass}">${chgStr}</span>
-  `;
 }
 
-function updateChartPrice() {
-  const p = prices[currentAsset];
+function updateChartBar() {
+  const p = prices[curAsset];
   if (!p) return;
-  document.getElementById("chartPriceBig").textContent = formatPrice(currentAsset, p);
-
-  // Push to chart
-  const now = Math.floor(Date.now()/1000);
-  if (!priceHistory[currentAsset].length) {
-    generateHistory(currentAsset, p);
-  } else {
-    const last = priceHistory[currentAsset][priceHistory[currentAsset].length-1];
-    const open = last.close;
-    const close = p;
-    const high = Math.max(open, close) * (1 + Math.random()*0.001);
-    const low  = Math.min(open, close) * (1 - Math.random()*0.001);
-    pushCandle({ time: now, open, high, low, close });
-  }
-
-  updatePayoutPreview();
+  const c = chg24[curAsset] || 0;
+  document.getElementById("cbPrice").textContent = fmtPrice(curAsset, p);
+  document.getElementById("cbChg").textContent = (c>=0?"+":"") + c.toFixed(2) + "%";
+  document.getElementById("cbChg").className = "cb-chg " + (c>=0?"up":"dn");
+  pushLiveCandle(p);
+  calcPayout();
 }
 
-function generateHistory(sym, currentP) {
-  const candles = [];
-  let t = Math.floor(Date.now()/1000) - 200 * 60;
-  let price = currentP * (0.98 + Math.random()*0.04);
-  const tfSec = getTFSeconds();
+function fmtPrice(sym, p) {
+  if (!p) return "--";
+  if (sym === "XRP") return "$"+p.toFixed(4);
+  if (sym === "BNB") return "$"+p.toFixed(2);
+  return "$"+p.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
 
+// ═══════════════════════════════════════════
+//  CHART
+// ═══════════════════════════════════════════
+function initChart() {
+  const el = document.getElementById("chartEl");
+  chart = LightweightCharts.createChart(el, {
+    width: el.clientWidth || 800,
+    height: el.clientHeight || 400,
+    layout: {background:{color:"#07080d"}, textColor:"#7a82a0"},
+    grid: {vertLines:{color:"#1a1d2e"}, horzLines:{color:"#1a1d2e"}},
+    crosshair: {mode: LightweightCharts.CrosshairMode.Normal},
+    rightPriceScale: {borderColor:"#1a1d2e"},
+    timeScale: {borderColor:"#1a1d2e", timeVisible:true, secondsVisible:true},
+  });
+  candleSeries = chart.addCandlestickSeries({
+    upColor:"#00d4aa", downColor:"#ff3355",
+    borderUpColor:"#00d4aa", borderDownColor:"#ff3355",
+    wickUpColor:"#00d4aa", wickDownColor:"#ff3355",
+  });
+  new ResizeObserver(()=>{
+    chart.applyOptions({width:el.clientWidth, height:el.clientHeight});
+  }).observe(el);
+}
+
+function buildHistory(sym) {
+  const base = prices[sym] || BASE_PRICES[sym];
+  const tfSec = getTFSec();
+  const candles = [];
+  let t = Math.floor(Date.now()/1000) - 200 * tfSec;
+  let px = base * (0.97 + Math.random()*0.06);
   for (let i = 0; i < 200; i++) {
-    const vol = price * 0.005;
-    const open = price;
+    const vol = px * 0.006;
+    const open = px;
     const close = open + (Math.random()-0.48)*vol;
-    const high  = Math.max(open,close) + Math.random()*vol*0.5;
-    const low   = Math.min(open,close) - Math.random()*vol*0.5;
-    price = close;
+    const high  = Math.max(open,close) + Math.random()*vol*0.4;
+    const low   = Math.min(open,close) - Math.random()*vol*0.4;
+    px = close;
     candles.push({time:t, open, high, low, close});
     t += tfSec;
   }
-  priceHistory[sym] = candles;
-  if (candleSeries) candleSeries.setData(candles);
+  priceHist[sym] = candles;
+  candleSeries.setData(candles);
 }
 
-function pushCandle(c) {
-  const hist = priceHistory[currentAsset];
-  if (!hist.length) return;
+function pushLiveCandle(closePrice) {
+  const hist = priceHist[curAsset];
+  if (!hist.length) { buildHistory(curAsset); return; }
+  const tfSec = getTFSec();
+  const now = Math.floor(Date.now()/1000);
   const last = hist[hist.length-1];
-  const tfSec = getTFSeconds();
 
-  if (c.time - last.time >= tfSec) {
+  if (now - last.time >= tfSec) {
+    const c = {time: last.time+tfSec, open:last.close, high:Math.max(last.close,closePrice), low:Math.min(last.close,closePrice), close:closePrice};
     hist.push(c);
     if (hist.length > 500) hist.shift();
+    candleSeries.update(c);
   } else {
-    last.close = c.close;
-    last.high = Math.max(last.high, c.high);
-    last.low  = Math.min(last.low,  c.low);
+    last.close = closePrice;
+    last.high  = Math.max(last.high, closePrice);
+    last.low   = Math.min(last.low,  closePrice);
     hist[hist.length-1] = last;
-  }
-  if (candleSeries && hist.length) {
-    candleSeries.update(hist[hist.length-1]);
+    candleSeries.update(last);
   }
 }
 
-function getTFSeconds() {
-  return {["1m"]:60,["5m"]:300,["15m"]:900,["1h"]:3600}[currentTF] || 60;
+function getTFSec() {
+  return {"1m":60,"5m":300,"15m":900,"1h":3600}[curTF] || 60;
 }
 
-function formatPrice(sym, p) {
-  if (!p) return "--";
-  if (sym === "XRP") return "$" + p.toFixed(4);
-  if (sym === "BNB") return "$" + p.toFixed(2);
-  return "$" + p.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
-}
-
-// ════════════════════════════════════════════════
-//  CHART INIT
-// ════════════════════════════════════════════════
-function initChart() {
-  const el = document.getElementById("chart");
-  chartInstance = LightweightCharts.createChart(el, {
-    width: el.clientWidth,
-    height: el.clientHeight,
-    layout: { background:{color:"#08090e"}, textColor:"#8890aa" },
-    grid: { vertLines:{color:"#1c1f32"}, horzLines:{color:"#1c1f32"} },
-    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-    rightPriceScale: { borderColor:"#1c1f32" },
-    timeScale: { borderColor:"#1c1f32", timeVisible:true, secondsVisible:false },
-  });
-
-  candleSeries = chartInstance.addCandlestickSeries({
-    upColor:"#00d4aa", downColor:"#ff3d5a",
-    borderUpColor:"#00d4aa", borderDownColor:"#ff3d5a",
-    wickUpColor:"#00d4aa", wickDownColor:"#ff3d5a",
-  });
-
-  window.addEventListener("resize", () => {
-    chartInstance.applyOptions({ width: el.clientWidth, height: el.clientHeight });
-  });
-
-  generateHistory(currentAsset, 65000);
-}
-
-// ════════════════════════════════════════════════
-//  COUNTDOWN BAR
-// ════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  COUNTDOWN
+// ═══════════════════════════════════════════
 function startCountdown() {
-  if (countdownInterval) clearInterval(countdownInterval);
-  const total = currentDur;
+  clearInterval(cdownTimer);
   let elapsed = 0;
-  countdownInterval = setInterval(() => {
+  const fill = document.getElementById("cdownFill");
+  cdownTimer = setInterval(()=>{
     elapsed++;
-    const pct = Math.max(0, 100 - (elapsed/total)*100);
-    document.getElementById("countdownFill").style.width = pct + "%";
-    if (elapsed >= total) { elapsed = 0; }
+    const pct = Math.max(0, 100 - (elapsed/curDur)*100);
+    fill.style.width = pct+"%";
+    if (pct <= 0) elapsed = 0;
   }, 1000);
 }
 
-// ════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  UI HELPERS
-// ════════════════════════════════════════════════
-function selectAsset(sym, btn) {
-  currentAsset = sym;
-  document.querySelectorAll(".asset-btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  document.getElementById("chartAssetName").textContent = sym + "/USD";
-  document.getElementById("chartPriceBig").textContent = formatPrice(sym, prices[sym]);
-  if (prices[sym] && priceHistory[sym].length) {
-    candleSeries.setData(priceHistory[sym]);
-  } else {
-    generateHistory(sym, prices[sym] || 1000);
-  }
-  updatePayoutPreview();
+// ═══════════════════════════════════════════
+function pickAsset(sym) {
+  curAsset = sym;
+  document.getElementById("cbPair").textContent = sym+"/USD";
+  buildTickers();
+  if (priceHist[sym].length) candleSeries.setData(priceHist[sym]);
+  else buildHistory(sym);
+  updateChartBar();
 }
 
-function selectDur(dur, btn) {
-  currentDur = dur;
-  document.querySelectorAll(".dur-tab").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
+function pickDur(d, btn) {
+  curDur = d;
+  document.querySelectorAll(".dur-btn").forEach(b=>b.classList.remove("on"));
+  btn.classList.add("on");
   startCountdown();
 }
 
 function setTF(tf, btn) {
-  currentTF = tf;
-  document.querySelectorAll(".tf-tab").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  generateHistory(currentAsset, prices[currentAsset] || 1000);
+  curTF = tf;
+  document.querySelectorAll(".tf").forEach(b=>b.classList.remove("on"));
+  btn.classList.add("on");
+  buildHistory(curAsset);
 }
 
-function setAmt(val) {
-  document.getElementById("amountInput").value = val;
-  updatePayoutPreview();
+function setAmt(v) {
+  document.getElementById("amtInp").value = v;
+  calcPayout();
 }
 
-function updatePayoutPreview() {
-  const amt = parseFloat(document.getElementById("amountInput").value) || 0;
-  const profit = (amt * 0.8).toFixed(4);
-  document.getElementById("payoutPreview").textContent = "+" + profit + " ZTC";
+function calcPayout() {
+  const amt = parseFloat(document.getElementById("amtInp").value) || 0;
+  document.getElementById("payoutPrev").textContent = "+" + (amt*0.8).toFixed(4) + " ZTC";
 }
 
-document.getElementById("amountInput").addEventListener("input", updatePayoutPreview);
-
-function goPage(page) {
-  const isMarket = page === "market";
-  document.getElementById("pageMarket").style.display = isMarket ? "flex" : "none";
-  document.getElementById("pageProfile").style.display = isMarket ? "none" : "block";
-  document.getElementById("mainBody").style.overflow = isMarket ? "hidden" : "auto";
-
-  document.getElementById("navMarket").classList.toggle("active", isMarket);
-  document.getElementById("navProfile").classList.toggle("active", !isMarket);
-  document.getElementById("assetPanel").style.display = isMarket ? "flex" : "none";
-
-  if (!isMarket && account) loadWalletData();
+function goPage(pg) {
+  const isMkt = pg === "market";
+  document.getElementById("pgMarket").className = "page" + (isMkt ? " show" : "");
+  document.getElementById("pgProfile").className = "page" + (!isMkt ? " show" : "");
+  document.getElementById("navM").className = "bnav-btn" + (isMkt ? " on" : "");
+  document.getElementById("navP").className = "bnav-btn" + (!isMkt ? " on" : "");
+  if (!isMkt) {
+    if (!account) {
+      document.getElementById("ncBanner").style.display = "block";
+    }
+    loadWalletData();
+  }
 }
 
-function formatDuration(sec) {
-  if (sec < 60) return sec + "s";
-  if (sec < 3600) return (sec/60) + "m";
-  return (sec/3600) + "h";
+function formatDur(s) {
+  if (s < 60) return s+"s";
+  if (s < 3600) return (s/60)+"m";
+  return (s/3600)+"h";
 }
 
-function addTx(type, amount, hash) {
-  txHistory.unshift({type, amount, hash, time: Date.now()});
+// TX history
+function addTx(type, amt, hash, isIn) {
+  txHistory.unshift({type, amt, hash, isIn, time: Date.now()});
   renderTxHistory();
 }
 
 function renderTxHistory() {
   const el = document.getElementById("txList");
-  if (!txHistory.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>No transactions yet</div>';
-    return;
-  }
-  el.innerHTML = txHistory.slice(0,20).map(tx => {
-    const t = new Date(tx.time).toLocaleTimeString();
-    const isIn = tx.type.startsWith("Deposit") || tx.type.includes("WON");
-    const col = isIn ? "var(--up)" : "var(--down)";
-    const sign = isIn ? "+" : "-";
-    return `
-    <div class="tx-item">
-      <div class="tx-left">
+  if (!txHistory.length) { el.innerHTML='<div class="empty">No transactions yet</div>'; return; }
+  el.innerHTML = txHistory.slice(0,20).map(tx=>{
+    const color = tx.isIn ? "var(--up)" : "var(--down)";
+    const sign  = tx.isIn ? "+" : "-";
+    const time  = new Date(tx.time).toLocaleTimeString();
+    const short = tx.hash ? tx.hash.slice(0,12)+"..." : "";
+    return `<div class="tx">
+      <div class="tx-l">
         <span class="tx-type">${tx.type}</span>
-        <span class="tx-time">${t}</span>
+        <span class="tx-time">${time}</span>
       </div>
-      <div class="tx-right">
-        <span class="tx-amount" style="color:${col}">${sign}${tx.amount} ZTC</span>
-        <span class="tx-hash" onclick="window.open('https://zentrace.io/tx/${tx.hash}','_blank')">
-          ${tx.hash ? tx.hash.slice(0,10)+"..." : ""}
-        </span>
+      <div class="tx-r">
+        <span class="tx-amt" style="color:${color}">${sign}${tx.amt} ZTC</span>
+        ${tx.hash ? `<span class="tx-link" onclick="open('https://zentrace.io/tx/${tx.hash}','_blank')">${short}</span>` : ""}
       </div>
     </div>`;
   }).join("");
 }
 
 // Modal
-let modalCallback = null;
-function showModal(title, body, callback) {
-  document.getElementById("modalTitle").textContent = title;
-  document.getElementById("modalBody").textContent = body;
-  modalCallback = callback;
-  document.getElementById("modalOverlay").classList.add("open");
-  document.getElementById("modalConfirm").onclick = async () => {
-    closeModal();
-    if (modalCallback) await modalCallback();
-  };
+let _modalCb = null;
+function showModal(title, body, cb) {
+  document.getElementById("mTitle").textContent = title;
+  document.getElementById("mBody").textContent = body;
+  _modalCb = cb;
+  document.getElementById("overlay").classList.add("open");
+  document.getElementById("mOk").onclick = ()=>{ closeModal(); _modalCb && _modalCb(); };
 }
-function closeModal() {
-  document.getElementById("modalOverlay").classList.remove("open");
-}
+function closeModal() { document.getElementById("overlay").classList.remove("open"); }
 
 // Toast
-let toastTimer;
-function showToast(msg, type="success") {
+let _tt;
+function toast(msg, type="ok") {
   const el = document.getElementById("toast");
   el.textContent = msg;
   el.className = "toast show " + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.className = "toast", 3000);
+  clearTimeout(_tt);
+  _tt = setTimeout(()=>el.className="toast", 3200);
 }
 
-// ════════════════════════════════════════════════
-//  INIT
-// ════════════════════════════════════════════════
-window.addEventListener("load", async () => {
+// ═══════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════
+window.addEventListener("load", async ()=>{
   initChart();
   startCountdown();
-  updatePayoutPreview();
+  calcPayout();
+
+  // Init price history with base prices
+  for (const sym of ASSETS) {
+    prices[sym] = BASE_PRICES[sym];
+  }
+  buildHistory(curAsset);
+  buildTickers();
+
+  // Fetch real prices
   await fetchPrices();
-  setInterval(fetchPrices, 15000);
-  setInterval(simulatePrices, 3000); // smooth live updates
+  setInterval(fetchPrices, 12000);
+
+  // Smooth live simulation between fetches
+  setInterval(()=>{
+    for (const sym of ASSETS) {
+      prices[sym] = prices[sym] * (1 + (Math.random()-0.499)*0.0008);
+    }
+    updateChartBar();
+    buildTickers();
+  }, 2000);
 });
 </script>
 </body>
