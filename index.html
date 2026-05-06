@@ -1,1010 +1,727 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bappy — Web3 Community Moderator</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --red: #1877F2;
-    --black: #0a0a0a;
-    --off-white: #F0F4FF;
-    --dark-bg: #0d1117;
-    --card-bg: #F0F4FF;
-    --text-dark: #0a0a0a;
-    --text-muted: #888;
-    --cyan: #38BDF8;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--dark-bg);
-    color: var(--text-dark);
-    overflow-x: hidden;
-    width: 100%;
-    max-width: 100vw;
-  }
-
-  /* ── Main content ── */
-  .page {
-    max-width: 560px;
-    margin: 0 auto;
-    padding: 88px 16px 40px;
-    overflow: hidden;
-  }
-  .nav {
-    position: fixed;
-    top: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-    background: var(--red);
-    border-radius: 50px;
-    padding: 10px 10px 10px 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: calc(100% - 32px);
-    max-width: 560px;
-    box-shadow: 0 8px 32px rgba(24,119,242,0.4);
-  }
-
-  .nav-logo {
-    width: 32px;
-    height: 32px;
-    object-fit: contain;
-    filter: brightness(0) invert(1);
-    flex-shrink: 0;
-  }
-
-  .nav-brand {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 16px;
-    color: #fff;
-    letter-spacing: 0.05em;
-    flex: 1;
-  }
-
-  .nav-btn {
-    background: var(--black);
-    color: #fff;
-    border: none;
-    border-radius: 50px;
-    padding: 8px 20px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: opacity 0.2s;
-  }
-  .nav-btn:hover { opacity: 0.8; }
-
-  /* ── Hero Card ── */
-  .hero-card {
-    background: var(--card-bg);
-    border-radius: 28px;
-    padding: 32px 28px 28px;
-    margin-bottom: 16px;
-    animation: fadeUp 0.6s ease both;
-  }
-
-  .available-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(24,119,242,0.12);
-    border-radius: 50px;
-    padding: 5px 14px;
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    color: #1877F2;
-    margin-bottom: 20px;
-  }
-
-  .available-dot {
-    width: 7px;
-    height: 7px;
-    background: #1877F2;
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.8); }
-  }
-
-  .hero-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 48px;
-    font-weight: 800;
-    line-height: 1.05;
-    color: var(--black);
-    margin-bottom: 20px;
-    word-break: break-word;
-    overflow-wrap: break-word;
-  }
-
-  .hero-copy {
-    font-size: 17px;
-    line-height: 1.6;
-    color: #444;
-    margin-bottom: 28px;
-  }
-
-  .contact-btn {
-    display: block;
-    background: var(--black);
-    color: #fff;
-    text-align: center;
-    border-radius: 50px;
-    padding: 18px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 17px;
-    text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .contact-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-  }
-
-  /* ── 2-col grid ── */
-  .grid2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 10px;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .card {
-    background: var(--card-bg);
-    border-radius: 24px;
-    overflow: hidden;
-    animation: fadeUp 0.6s ease both;
-    min-width: 0;
-  }
-
-  /* Identity card */
-  .identity-card {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 200px;
-    position: relative;
-  }
-
-  .identity-name {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 18px;
-    color: var(--black);
-  }
-
-  .identity-tz {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
-
-  .identity-img {
-    width: 100%;
-    height: 130px;
-    object-fit: cover;
-    object-position: top;
-    border-radius: 12px;
-    margin-top: 12px;
-  }
-
-  .expert-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    background: #fff;
-    border-radius: 50px;
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--black);
-    margin-top: 8px;
-    width: fit-content;
-  }
-
-  /* Avatar card */
-  .avatar-card {
-    background: var(--card-bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 200px;
-  }
-
-  .avatar-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: top;
-    filter: grayscale(100%) contrast(1.1);
-  }
-
-  /* Role card */
-  .role-card {
-    background: var(--red);
-    border-radius: 24px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 200px;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .role-symbol {
-    font-family: 'Syne', sans-serif;
-    font-size: 80px;
-    font-weight: 800;
-    color: rgba(255,255,255,0.15);
-    position: absolute;
-    right: -10px;
-    top: 10px;
-    line-height: 1;
-  }
-
-  .role-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 22px;
-    font-weight: 800;
-    color: #fff;
-    letter-spacing: 0.05em;
-    position: relative;
-    z-index: 1;
-  }
-
-  .role-subtitle {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-style: italic;
-    color: rgba(255,255,255,0.7);
-    position: relative;
-    z-index: 1;
-    margin-top: 4px;
-  }
-
-  .role-org {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 13px;
-    letter-spacing: 0.05em;
-    color: #fff;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Socials card */
-  .socials-card {
-    background: var(--card-bg);
-    border-radius: 24px;
-    padding: 18px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    place-items: center;
-    min-height: 200px;
-  }
-
-  .social-btn {
-    width: 52px;
-    height: 52px;
-    background: #dbeafe;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    transition: transform 0.2s, background 0.2s;
-    font-size: 20px;
-  }
-  .social-btn:hover {
-    transform: scale(1.1);
-    background: #1877F2;
-  }
-  .social-btn:hover svg { fill: #fff; }
-  .social-btn svg { width: 22px; height: 22px; fill: #1877F2; transition: fill 0.2s; }
-
-  /* Big red statement card */
-  .statement-card {
-    background: var(--red);
-    border-radius: 28px;
-    padding: 36px 28px 28px;
-    margin-bottom: 12px;
-    animation: fadeUp 0.6s ease both;
-  }
-
-  .statement-text {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 26px;
-    line-height: 1.25;
-    color: #fff;
-    margin-bottom: 28px;
-    word-break: break-word;
-  }
-
-  .tags-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .tag {
-    font-family: 'Syne', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    color: rgba(255,255,255,0.45);
-    text-transform: uppercase;
-  }
-
-  /* Services */
-  .section-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 38px;
-    font-weight: 800;
-    color: #fff;
-    margin: 28px 0 16px;
-  }
-
-  .service-card {
-    background: var(--card-bg);
-    border-radius: 24px;
-    padding: 22px 20px 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-  }
-
-  .service-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-
-  .service-emoji {
-    width: 44px;
-    height: 44px;
-    background: #dbeafe;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-  }
-
-  .service-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 28px;
-    font-weight: 800;
-    color: #ccc;
-  }
-
-  .service-name {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 19px;
-    color: var(--black);
-    word-break: break-word;
-  }
-
-  .service-desc {
-    font-size: 13px;
-    color: #666;
-    margin-top: 4px;
-  }
-
-  /* Projects */
-  .projects-card {
-    background: var(--card-bg);
-    border-radius: 28px;
-    padding: 28px;
-    margin-bottom: 12px;
-    animation: fadeUp 0.6s ease both;
-  }
-
-  .projects-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 36px;
-    font-weight: 800;
-    color: var(--black);
-    margin-bottom: 4px;
-  }
-
-  .projects-sub {
-    font-size: 14px;
-    color: #888;
-    margin-bottom: 24px;
-  }
-
-  .project-item {
-    margin-bottom: 28px;
-  }
-
-  .project-thumb {
-    width: 100%;
-    height: 160px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #1a1a1a, #333);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 12px;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .project-thumb-1 { background: linear-gradient(135deg, #1877F2, #38BDF8); }
-  .project-thumb-2 { background: linear-gradient(135deg, #0d1117, #1e293b); }
-  .project-thumb-3 { background: linear-gradient(135deg, #0f172a, #1e40af); }
-
-  .project-thumb-text {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 28px;
-    color: rgba(255,255,255,0.3);
-    letter-spacing: 0.05em;
-  }
-
-  .project-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-  }
-
-  .project-name {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 16px;
-    letter-spacing: 0.03em;
-    color: var(--black);
-  }
-
-  .project-year {
-    font-size: 13px;
-    color: #aaa;
-  }
-
-  .project-role {
-    display: inline-block;
-    background: rgba(24,119,242,0.12);
-    color: #1877F2;
-    border-radius: 50px;
-    padding: 4px 12px;
-    font-size: 12px;
-    font-weight: 500;
-  }
-
-  /* CV section */
-  .cv-card {
-    background: var(--card-bg);
-    border-radius: 28px;
-    padding: 32px 28px;
-    margin-bottom: 12px;
-    animation: fadeUp 0.6s ease both;
-  }
-
-  .cv-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 38px;
-    font-weight: 800;
-    color: var(--black);
-    line-height: 1.1;
-    margin-bottom: 12px;
-  }
-
-  .cv-sub {
-    font-size: 15px;
-    color: #555;
-    margin-bottom: 24px;
-  }
-
-  .cv-btn {
-    display: inline-block;
-    background: var(--black);
-    color: #fff;
-    border-radius: 50px;
-    padding: 16px 32px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    text-decoration: none;
-    transition: transform 0.2s;
-  }
-  .cv-btn:hover { transform: translateY(-2px); }
-
-  /* Highlights */
-  .highlight-card {
-    background: var(--card-bg);
-    border-radius: 24px;
-    padding: 20px 22px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 10px;
-    animation: fadeUp 0.6s ease both;
-  }
-
-  .hl-icon {
-    width: 52px;
-    height: 52px;
-    background: #dbeafe;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 22px;
-  }
-
-  .hl-meta { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #999; text-transform: uppercase; }
-  .hl-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: var(--black); }
-
-  /* Contact form */
-  .contact-card {
-    background: var(--card-bg);
-    border-radius: 28px;
-    padding: 32px 28px;
-    margin-bottom: 12px;
-    animation: fadeUp 0.6s ease both;
-  }
-
-  .contact-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 34px;
-    font-weight: 800;
-    text-align: center;
-    line-height: 1.2;
-    margin-bottom: 8px;
-    color: var(--black);
-  }
-
-  .contact-sub {
-    text-align: center;
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 24px;
-  }
-
-  .input-field {
-    width: 100%;
-    background: #fff;
-    border: none;
-    border-radius: 16px;
-    padding: 18px 20px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    color: var(--black);
-    margin-bottom: 12px;
-    outline: none;
-    transition: box-shadow 0.2s;
-  }
-  .input-field:focus { box-shadow: 0 0 0 2px #1877F2; }
-  .input-field::placeholder { color: #bbb; }
-
-  textarea.input-field { height: 120px; resize: none; }
-
-  .send-btn {
-    display: block;
-    width: 100%;
-    background: var(--black);
-    color: #fff;
-    border: none;
-    border-radius: 50px;
-    padding: 18px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 17px;
-    cursor: pointer;
-    transition: transform 0.2s;
-    margin-top: 4px;
-  }
-  .send-btn:hover { transform: translateY(-2px); }
-
-  /* Connect & socials footer */
-  .connect-card {
-    background: var(--card-bg);
-    border-radius: 28px;
-    padding: 36px 28px 28px;
-    margin-bottom: 12px;
-    animation: fadeUp 0.6s ease both;
-  }
-
-  .connect-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 44px;
-    font-weight: 800;
-    color: var(--black);
-    line-height: 1.1;
-    margin-bottom: 32px;
-  }
-
-  .email-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border-top: 1.5px solid #ddd;
-    padding-top: 20px;
-  }
-
-  .email-link {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--black);
-    text-decoration: underline;
-    flex: 1;
-  }
-
-  .email-arrow {
-    width: 40px;
-    height: 40px;
-    background: var(--black);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  /* Follow card */
-  .follow-card {
-    background: var(--red);
-    border-radius: 28px;
-    padding: 36px 28px;
-    margin-bottom: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    animation: fadeUp 0.6s ease both;
-  }
-
-  .pill {
-    border-radius: 50px;
-    padding: 14px 36px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 17px;
-    letter-spacing: 0.05em;
-    text-decoration: none;
-    display: inline-block;
-    transition: transform 0.2s, opacity 0.2s;
-    text-align: center;
-    width: 220px;
-  }
-  .pill:hover { transform: scale(1.04); opacity: 0.9; }
-  .pill-dark { background: var(--black); color: #fff; }
-  .pill-light { background: #fff; color: var(--black); }
-
-  /* Footer */
-  .footer {
-    text-align: center;
-    padding: 20px 0 8px;
-    animation: fadeUp 0.6s ease both;
-  }
-
-  .footer-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-
-  .footer-logo img {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
-    filter: brightness(0) saturate(100%) invert(35%) sepia(90%) saturate(1500%) hue-rotate(200deg);
-  }
-
-  .footer-brand {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 13px;
-    color: #1877F2;
-  }
-
-  .footer-brand a { color: #1877F2; text-decoration: none; font-weight: 800; }
-
-  .footer-copy {
-    font-size: 11px;
-    color: #555;
-    letter-spacing: 0.08em;
-    margin-bottom: 8px;
-  }
-
-  .footer-links { display: flex; gap: 20px; justify-content: center; }
-  .footer-links a {
-    font-size: 12px;
-    color: #1877F2;
-    text-decoration: none;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .card:nth-child(1) { animation-delay: 0.05s; }
-  .card:nth-child(2) { animation-delay: 0.1s; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>BinaryTrade - High/Low Trading</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0e1a;
+            color: #e0e4f0;
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow-x: hidden;
+        }
+        .app { max-width: 500px; margin: 0 auto; padding: 16px; min-height: 100vh; }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #0f1629, #0a0e1a);
+            border-radius: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #1f2a44;
+        }
+        .logo h2 { font-size: 20px; background: linear-gradient(135deg, #f0b90b, #f0b90b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .balance-box { text-align: right; }
+        .balance-label { font-size: 10px; color: #8a92b0; }
+        .balance-value { font-size: 22px; font-weight: bold; color: #f0b90b; }
+        
+        /* Chart */
+        .chart-container {
+            background: #0f1629;
+            border-radius: 20px;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #1f2a44;
+        }
+        canvas {
+            width: 100%;
+            height: 250px;
+            background: #0d1224;
+            border-radius: 12px;
+        }
+        
+        /* Market Info */
+        .market-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #0f1629;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #1f2a44;
+        }
+        .current-price {
+            font-size: 24px;
+            font-weight: bold;
+            font-family: monospace;
+        }
+        .current-price.up { color: #00c853; }
+        .current-price.down { color: #ff3b30; }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .status-open { background: #00c85320; color: #00c853; border: 1px solid #00c85340; }
+        .status-closed { background: #ff3b3020; color: #ff3b30; border: 1px solid #ff3b3040; }
+        
+        /* Timer */
+        .timer-card {
+            background: linear-gradient(135deg, #1a1f33, #0f1629);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 16px;
+            border: 1px solid #f0b90b;
+        }
+        .timer-value {
+            font-size: 48px;
+            font-weight: bold;
+            font-family: monospace;
+            color: #f0b90b;
+        }
+        .trade-status {
+            font-size: 12px;
+            color: #8a92b0;
+            margin-top: 8px;
+        }
+        
+        /* Trading Buttons */
+        .trade-buttons {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .btn-high, .btn-low {
+            flex: 1;
+            padding: 18px;
+            border: none;
+            border-radius: 16px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .btn-high:active, .btn-low:active { transform: scale(0.97); }
+        .btn-high {
+            background: linear-gradient(135deg, #00c853, #009624);
+            color: white;
+        }
+        .btn-low {
+            background: linear-gradient(135deg, #ff3b30, #cc2f25);
+            color: white;
+        }
+        .btn-disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        /* Bet Input */
+        .bet-control {
+            background: #0f1629;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #1f2a44;
+        }
+        .bet-amount {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .bet-amount input {
+            flex: 1;
+            padding: 12px;
+            background: #1a1f33;
+            border: 1px solid #2a3555;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            text-align: center;
+        }
+        .quick-bets {
+            display: flex;
+            gap: 8px;
+        }
+        .quick-bet {
+            flex: 1;
+            padding: 8px;
+            background: #1a1f33;
+            border: 1px solid #2a3555;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .quick-bet:active { background: #2a3555; }
+        
+        /* History */
+        .history-card {
+            background: #0f1629;
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid #1f2a44;
+        }
+        .history-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #f0b90b;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #1f2a44;
+        }
+        .history-result-win { color: #00c853; }
+        .history-result-loss { color: #ff3b30; }
+        
+        /* Auth Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal.hidden { display: none; }
+        .modal-box {
+            background: #0f1629;
+            padding: 28px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 360px;
+            border: 1px solid #f0b90b;
+        }
+        .modal-box h3 { margin-bottom: 20px; text-align: center; }
+        .modal-box input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: #1a1f33;
+            border: 1px solid #2a3555;
+            border-radius: 10px;
+            color: white;
+        }
+        .modal-box button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            background: linear-gradient(135deg, #f0b90b, #d49a08);
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: #1a1f33;
+            border: none;
+            border-radius: 10px;
+            color: #8a92b0;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: #f0b90b;
+            color: #0a0e1a;
+        }
+        .error-msg {
+            color: #ff3b30;
+            font-size: 11px;
+            margin-top: 8px;
+            text-align: center;
+        }
+        .profit-badge {
+            font-size: 11px;
+            margin-top: 4px;
+        }
+    </style>
 </head>
 <body>
-
-<!-- Sticky Nav -->
-<nav class="nav">
-  <img src="https://i.postimg.cc/Ls4d6mmq/1774546323293-removebg-preview.png" alt="Nexora" class="nav-logo" style="filter:brightness(0) invert(1)">
-  <span class="nav-brand">NEXORA</span>
-  <a href="https://Nexora.vercel.app" target="_blank" class="nav-btn">Visit</a>
-</nav>
-
-<div class="page">
-
-  <!-- Hero -->
-  <div class="hero-card">
-    <div class="available-badge">
-      <span class="available-dot"></span>
-      AVAILABLE FOR WORK
-    </div>
-    <h1 class="hero-title">Hi, I'm<br>Bappy©</h1>
-    <p class="hero-copy">An experienced Web3 Community Moderator focused on creating secure, engaging, and well organized crypto communities.</p>
-    <a href="https://discord.com/users/1331926710853177406" target="_blank" class="contact-btn">Contact Me</a>
-  </div>
-
-  <!-- Row: Identity + Avatar -->
-  <div class="grid2">
-    <div class="card identity-card">
-      <div>
-        <div class="identity-name">bappyonchain</div>
-        <div class="identity-tz">UTC +6</div>
-      </div>
-      <img src="https://i.postimg.cc/L592cjhC/FYZAN.jpg" alt="Bappy" class="identity-img">
-      <div class="expert-badge">⚡ EXPERT</div>
-    </div>
-    <div class="card avatar-card">
-      <img src="https://i.postimg.cc/L592cjhC/FYZAN.jpg" alt="Bappy profile" class="avatar-img">
-    </div>
-  </div>
-
-  <!-- Row: Role + Socials -->
-  <div class="grid2" style="margin-bottom:12px;">
-    <div class="role-card">
-      <div class="role-symbol">✦</div>
-      <div>
-        <div class="role-title">Founder</div>
-        <div class="role-subtitle">of</div>
-      </div>
-      <div>
-        <div class="role-org">NEXORA</div>
-        <div class="role-subtitle">community</div>
-      </div>
-      <img src="https://i.postimg.cc/Ls4d6mmq/1774546323293-removebg-preview.png" alt="Nexora" style="width:40px;height:40px;object-fit:contain;filter:brightness(0) invert(1);opacity:0.8;margin-top:8px;">
+    <div id="authModal" class="modal">
+        <div class="modal-box">
+            <h3>🔐 BINARY TRADE</h3>
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+                <button class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+            </div>
+            <div id="loginForm">
+                <input type="text" id="loginUser" placeholder="Username">
+                <input type="password" id="loginPass" placeholder="Password">
+                <button onclick="doLogin()">Login</button>
+                <div id="loginError" class="error-msg"></div>
+            </div>
+            <div id="signupForm" style="display: none;">
+                <input type="text" id="signupUser" placeholder="Username">
+                <input type="password" id="signupPass" placeholder="Password">
+                <button onclick="doSignup()">Create Account</button>
+                <div id="signupError" class="error-msg"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="socials-card">
-      <!-- Discord -->
-      <a href="https://discord.gg/yM3fM2s6g" target="_blank" class="social-btn" title="Discord">
-        <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-      </a>
-      <!-- X/Twitter -->
-      <a href="https://x.com/BappyOnChain" target="_blank" class="social-btn" title="X/Twitter">
-        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.845L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      </a>
-      <!-- GitHub -->
-      <a href="https://github.com/Web3BuilderBappy" target="_blank" class="social-btn" title="GitHub">
-        <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-      </a>
-      <!-- Telegram -->
-      <a href="https://t.me/BappyOnchain" target="_blank" class="social-btn" title="Telegram">
-        <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-      </a>
-      <!-- Instagram -->
-      <a href="https://www.instagram.com/bappyonchain?igsh=eHVycXJmMnNjbDRy" target="_blank" class="social-btn" title="Instagram">
-        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
-      </a>
-      <!-- LinkedIn placeholder -->
-      <a href="#" target="_blank" class="social-btn" title="LinkedIn">
-        <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-      </a>
-    </div>
-  </div>
+    <div id="mainApp" class="app" style="display: none;">
+        <div class="header">
+            <div class="logo"><h2>📊 BINARY TRADE</h2></div>
+            <div class="balance-box">
+                <div class="balance-label">BALANCE</div>
+                <div class="balance-value" id="balance">0.00</div>
+                <div class="profit-badge" id="profitBadge"></div>
+            </div>
+        </div>
 
-  <!-- Statement card -->
-  <div class="statement-card">
-    <p class="statement-text">Experienced in managing Discord and Telegram communities, with a strong focus on engagement, clear communication, and sustainable long-term growth.</p>
-    <div class="tags-row">
-      <span class="tag">Web3</span>
-      <span class="tag">Crypto</span>
-      <span class="tag">Blockchain</span>
-      <span class="tag">Onchain</span>
-      <span class="tag">Content</span>
-    </div>
-  </div>
+        <div class="chart-container">
+            <canvas id="priceChart" width="800" height="250"></canvas>
+        </div>
 
-  <!-- Services -->
-  <h2 class="section-title">How Can I Assist You?</h2>
-  <div class="grid2">
-    <div class="card service-card">
-      <div class="service-header">
-        <div class="service-emoji">📊</div>
-        <span class="service-num">01</span>
-      </div>
-      <div>
-        <div class="service-name">Analysis</div>
-        <div class="service-desc">Understanding and adopting.</div>
-      </div>
-    </div>
-    <div class="card service-card">
-      <div class="service-header">
-        <div class="service-emoji">✍️</div>
-        <span class="service-num">02</span>
-      </div>
-      <div>
-        <div class="service-name">Content</div>
-        <div class="service-desc">Simplifying complex ideas into insights.</div>
-      </div>
-    </div>
-    <div class="card service-card">
-      <div class="service-header">
-        <div class="service-emoji">🏗️</div>
-        <span class="service-num">03</span>
-      </div>
-      <div>
-        <div class="service-name">Building</div>
-        <div class="service-desc">Contributing while managing communities.</div>
-      </div>
-    </div>
-    <div class="card service-card">
-      <div class="service-header">
-        <div class="service-emoji">🦺</div>
-        <span class="service-num">04</span>
-      </div>
-      <div>
-        <div class="service-name">Moderation</div>
-        <div class="service-desc">Keeping servers clean and constructive.</div>
-      </div>
-    </div>
-  </div>
+        <div class="market-info">
+            <div>
+                <div style="font-size: 10px; color: #8a92b0;">Current Price</div>
+                <div class="current-price" id="currentPrice">0.00</div>
+            </div>
+            <div>
+                <div style="font-size: 10px; color: #8a92b0;">24h Change</div>
+                <div id="priceChange">0.00%</div>
+            </div>
+            <div>
+                <div id="marketStatus" class="status-badge status-closed">CLOSED</div>
+            </div>
+        </div>
 
-  <!-- Projects -->
-  <div class="projects-card">
-    <div class="projects-title">Building...</div>
-    <div class="projects-sub">Explore my Involvements on this web3 space...</div>
+        <div class="timer-card">
+            <div class="timer-value" id="timer">--</div>
+            <div class="trade-status" id="tradeStatus">🔒 Market is closed</div>
+        </div>
 
-    <!-- Project 1 -->
-    <div class="project-item">
-      <div class="project-thumb project-thumb-1">
-        <span class="project-thumb-text">NEXORA</span>
-      </div>
-      <div class="project-meta">
-        <span class="project-name">NEXORA COMMUNITY</span>
-        <span class="project-year">2025–26</span>
-      </div>
-      <span class="project-role">Founder</span>
+        <div class="bet-control">
+            <div class="bet-amount">
+                <input type="number" id="betAmount" value="10" min="1" step="5">
+            </div>
+            <div class="quick-bets">
+                <div class="quick-bet" onclick="setBetAmount(10)">10</div>
+                <div class="quick-bet" onclick="setBetAmount(25)">25</div>
+                <div class="quick-bet" onclick="setBetAmount(50)">50</div>
+                <div class="quick-bet" onclick="setBetAmount(100)">100</div>
+                <div class="quick-bet" onclick="setBetAmount(500)">500</div>
+            </div>
+        </div>
+
+        <div class="trade-buttons">
+            <button class="btn-high" id="highBtn" onclick="placeTrade('high')">📈 HIGH</button>
+            <button class="btn-low" id="lowBtn" onclick="placeTrade('low')">📉 LOW</button>
+        </div>
+
+        <div class="history-card">
+            <div class="history-title">📜 Trade History</div>
+            <div id="historyList">
+                <div style="text-align: center; color: #8a92b0; padding: 20px;">No trades yet</div>
+            </div>
+        </div>
     </div>
 
-    <!-- Project 2 -->
-    <div class="project-item">
-      <div class="project-thumb project-thumb-2">
-        <span class="project-thumb-text">WEB3</span>
-      </div>
-      <div class="project-meta">
-        <span class="project-name">PROJECT ALPHA</span>
-        <span class="project-year">2025–26</span>
-      </div>
-      <span class="project-role">Community Moderator</span>
-    </div>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCJPWBRExcq3rjltVaRvc9-HwAn9iRlyRU",
+            authDomain: "aviator-bappy.firebaseapp.com",
+            databaseURL: "https://aviator-bappy-default-rtdb.firebaseio.com",
+            projectId: "aviator-bappy",
+            storageBucket: "aviator-bappy.firebasestorage.app",
+            messagingSenderId: "380289888792",
+            appId: "1:380289888792:web:afda6c3a33383d641f496d"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-    <!-- Project 3 -->
-    <div class="project-item">
-      <div class="project-thumb project-thumb-3">
-        <span class="project-thumb-text">ONCHAIN</span>
-      </div>
-      <div class="project-meta">
-        <span class="project-name">CHAIN PROJECT</span>
-        <span class="project-year">2026</span>
-      </div>
-      <span class="project-role">Regional Moderator</span>
-    </div>
-  </div>
+        let currentUser = null;
+        let currentPrice = 100;
+        let marketOpen = false;
+        let chartData = [];
+        let chartCanvas, chartCtx;
+        let tradeActive = false;
+        let tradeDirection = null;
+        let tradeEndPrice = null;
+        let timerInterval = null;
+        let tradeTimeLeft = 0;
+        let tradeAmount = 0;
+        
+        let users = JSON.parse(localStorage.getItem('binary_users') || '{}');
 
-  <!-- CV -->
-  <div class="cv-card">
-    <div class="cv-title">Wanna see my experience?</div>
-    <p class="cv-sub">Years of crafting digital experiences for world-class projects.</p>
-    <a href="https://docs.google.com/document/u/0/d/1hTxK-JXTJjyySMJZ745HwW2w2iYfQgR1/mobilebasic" target="_blank" class="cv-btn">Read my CV</a>
-  </div>
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const btns = document.querySelectorAll('.tab-btn');
+            if (tab === 'login') {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+                btns[0].classList.add('active');
+                btns[1].classList.remove('active');
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                btns[0].classList.remove('active');
+                btns[1].classList.add('active');
+            }
+        }
 
-  <!-- Highlights -->
-  <div class="highlight-card">
-    <div class="hl-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="#1877F2"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-    </div>
-    <div>
-      <div class="hl-meta">Discord</div>
-      <div class="hl-title">Top role holder at several DC server</div>
-    </div>
-  </div>
+        function doLogin() {
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value;
+            if (!users[user] || users[user].password !== pass) {
+                document.getElementById('loginError').textContent = 'Invalid username or password';
+                return;
+            }
+            currentUser = user;
+            localStorage.setItem('binary_current_user', user);
+            document.getElementById('authModal').classList.add('hidden');
+            document.getElementById('mainApp').style.display = 'block';
+            loadUserData();
+            initChart();
+            startMarketListener();
+        }
 
-  <div class="highlight-card">
-    <div class="hl-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="#1877F2"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.845L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-    </div>
-    <div>
-      <div class="hl-meta">X/Twitter</div>
-      <div class="hl-title">Host/Co-host on Regional X spaces</div>
-    </div>
-  </div>
+        function doSignup() {
+            const user = document.getElementById('signupUser').value.trim();
+            const pass = document.getElementById('signupPass').value;
+            if (!user || !pass) {
+                document.getElementById('signupError').textContent = 'Fill all fields';
+                return;
+            }
+            if (users[user]) {
+                document.getElementById('signupError').textContent = 'Username exists';
+                return;
+            }
+            users[user] = {
+                password: pass,
+                balance: 1000,
+                history: []
+            };
+            localStorage.setItem('binary_users', JSON.stringify(users));
+            currentUser = user;
+            localStorage.setItem('binary_current_user', user);
+            document.getElementById('authModal').classList.add('hidden');
+            document.getElementById('mainApp').style.display = 'block';
+            loadUserData();
+            initChart();
+            startMarketListener();
+        }
 
-  <div class="highlight-card" style="margin-bottom:12px;">
-    <div class="hl-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="#1877F2"><circle cx="12" cy="12" r="10" fill="none" stroke="#1877F2" stroke-width="2"/><line x1="2" y1="12" x2="22" y2="12" stroke="#1877F2" stroke-width="2"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" fill="none" stroke="#1877F2" stroke-width="2"/></svg>
-    </div>
-    <div>
-      <div class="hl-meta">Community</div>
-      <div class="hl-title">Emphasizes overall Ecosystem work</div>
-    </div>
-  </div>
+        function loadUserData() {
+            if (!users[currentUser]) return;
+            document.getElementById('balance').textContent = users[currentUser].balance.toFixed(2);
+            renderHistory();
+            updateProfitBadge();
+        }
 
-  <!-- Contact form -->
-  <div class="contact-card">
-    <div class="contact-title">Contact with me to sizzle your project</div>
-    <p class="contact-sub">Feel free to contact me on any queries. I'm available for new projects or just for chatting.</p>
-    <input type="text" class="input-field" placeholder="Full Name">
-    <input type="email" class="input-field" placeholder="Email Address">
-    <textarea class="input-field" placeholder="Project details..."></textarea>
-    <button class="send-btn" onclick="alert('Message sent! I will get back to you soon.')">Send Message</button>
-  </div>
+        function saveUserData() {
+            localStorage.setItem('binary_users', JSON.stringify(users));
+            document.getElementById('balance').textContent = users[currentUser].balance.toFixed(2);
+            updateProfitBadge();
+        }
 
-  <!-- Connect -->
-  <div class="connect-card">
-    <div class="connect-title">Let's connect and chat</div>
-    <div class="email-row">
-      <a href="/cdn-cgi/l/email-protection#82f5eafbf1eae3eae7e6c2e5efe3ebeeace1edef" class="email-link"><span class="__cf_email__" data-cfemail="91f3f0e1e1e8fefff2f9f0f8ffd1f6fcf0f8fdbff2fefc">[email&#160;protected]</span></a>
-      <div class="email-arrow">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-      </div>
-    </div>
-  </div>
+        function updateProfitBadge() {
+            const totalTrades = users[currentUser]?.history?.length || 0;
+            const wins = users[currentUser]?.history?.filter(h => h.result === 'win').length || 0;
+            const winRate = totalTrades > 0 ? (wins / totalTrades * 100).toFixed(1) : 0;
+            document.getElementById('profitBadge').innerHTML = `🏆 Win Rate: ${winRate}%`;
+        }
 
-  <!-- Follow pills -->
-  <div class="follow-card">
-    <div class="pill pill-dark" style="pointer-events:none;">FOLLOW ME!</div>
-    <a href="https://www.instagram.com/bappyonchain?igsh=eHVycXJmMnNjbDRy" target="_blank" class="pill pill-light">INSTAGRAM</a>
-    <a href="https://discord.gg/yM3fM2s6g" target="_blank" class="pill pill-dark">COMMUNITY</a>
-    <a href="https://t.me/BappyOnchain" target="_blank" class="pill pill-light">TELEGRAM</a>
-    <a href="#" target="_blank" class="pill pill-dark">LINKEDIN</a>
-    <a href="https://discord.gg/yM3fM2s6g" target="_blank" class="pill pill-light">DISCORD</a>
-  </div>
+        function startMarketListener() {
+            const marketRef = db.ref('binary/market');
+            marketRef.on('value', (snap) => {
+                const data = snap.val();
+                if (data) {
+                    currentPrice = data.price || 100;
+                    marketOpen = data.isOpen || false;
+                    updateMarketUI(data);
+                    addChartPoint(currentPrice);
+                    if (tradeActive) {
+                        checkTradeResult();
+                    }
+                }
+            });
+        }
 
-  <!-- Footer -->
-  <div class="footer">
-    <div class="footer-logo">
-      <img src="https://i.postimg.cc/Ls4d6mmq/1774546323293-removebg-preview.png" alt="Nexora">
-      <span class="footer-brand">a product of <a href="https://Nexora.vercel.app" target="_blank">NEXORA</a></span>
-    </div>
-    <div class="footer-copy">© BAPPY ONCHAIN 2026</
+        function updateMarketUI(data) {
+            const priceEl = document.getElementById('currentPrice');
+            const changeEl = document.getElementById('priceChange');
+            const statusEl = document.getElementById('marketStatus');
+            
+            priceEl.textContent = data.price.toFixed(2);
+            priceEl.className = `current-price ${data.change >= 0 ? 'up' : 'down'}`;
+            changeEl.textContent = `${data.change >= 0 ? '+' : ''}${data.change.toFixed(2)}%`;
+            
+            if (data.isOpen) {
+                statusEl.textContent = 'OPEN';
+                statusEl.className = 'status-badge status-open';
+                if (!tradeActive) {
+                    document.getElementById('highBtn').classList.remove('btn-disabled');
+                    document.getElementById('lowBtn').classList.remove('btn-disabled');
+                }
+            } else {
+                statusEl.textContent = 'CLOSED';
+                statusEl.className = 'status-badge status-closed';
+                document.getElementById('highBtn').classList.add('btn-disabled');
+                document.getElementById('lowBtn').classList.add('btn-disabled');
+            }
+        }
+
+        // Chart
+        function initChart() {
+            chartCanvas = document.getElementById('priceChart');
+            chartCtx = chartCanvas.getContext('2d');
+            chartCanvas.width = chartCanvas.clientWidth;
+            chartCanvas.height = chartCanvas.clientHeight;
+            
+            for (let i = 0; i < 100; i++) {
+                chartData.push(100);
+            }
+            drawChart();
+        }
+
+        function addChartPoint(price) {
+            chartData.push(price);
+            if (chartData.length > 100) chartData.shift();
+            drawChart();
+        }
+
+        function drawChart() {
+            if (!chartCanvas || !chartCtx) return;
+            const width = chartCanvas.clientWidth;
+            const height = chartCanvas.clientHeight;
+            chartCanvas.width = width;
+            chartCanvas.height = height;
+            
+            if (chartData.length < 2) return;
+            
+            const min = Math.min(...chartData);
+            const max = Math.max(...chartData);
+            const range = max - min || 1;
+            
+            chartCtx.clearRect(0, 0, width, height);
+            
+            // Grid
+            chartCtx.strokeStyle = '#1f2a44';
+            chartCtx.lineWidth = 0.5;
+            for (let i = 0; i <= 4; i++) {
+                const y = height - (i * height / 4);
+                chartCtx.beginPath();
+                chartCtx.moveTo(0, y);
+                chartCtx.lineTo(width, y);
+                chartCtx.stroke();
+            }
+            
+            // Line
+            chartCtx.beginPath();
+            chartCtx.strokeStyle = '#f0b90b';
+            chartCtx.lineWidth = 2;
+            
+            const step = width / (chartData.length - 1);
+            for (let i = 0; i < chartData.length; i++) {
+                const x = i * step;
+                const y = height - ((chartData[i] - min) / range) * (height - 40) - 20;
+                if (i === 0) chartCtx.moveTo(x, y);
+                else chartCtx.lineTo(x, y);
+            }
+            chartCtx.stroke();
+            
+            // Fill
+            chartCtx.lineTo(width, height);
+            chartCtx.lineTo(0, height);
+            chartCtx.fillStyle = '#f0b90b10';
+            chartCtx.fill();
+        }
+
+        function setBetAmount(amt) {
+            document.getElementById('betAmount').value = amt;
+        }
+
+        function placeTrade(direction) {
+            if (!marketOpen) {
+                alert('Market is closed!');
+                return;
+            }
+            if (tradeActive) {
+                alert('Wait for current trade to finish!');
+                return;
+            }
+            
+            const amount = parseFloat(document.getElementById('betAmount').value);
+            if (amount <= 0 || isNaN(amount)) {
+                alert('Enter valid amount');
+                return;
+            }
+            if (amount > users[currentUser].balance) {
+                alert('Insufficient balance!');
+                return;
+            }
+            
+            // Get trade duration from admin settings (default 30 sec)
+            db.ref('binary/settings').get().then((snap) => {
+                const settings = snap.val() || { tradeDuration: 30 };
+                const duration = settings.tradeDuration || 30;
+                
+                tradeActive = true;
+                tradeDirection = direction;
+                tradeAmount = amount;
+                tradeTimeLeft = duration;
+                tradeEndPrice = null;
+                
+                users[currentUser].balance -= amount;
+                saveUserData();
+                
+                updateTimerDisplay();
+                document.getElementById('tradeStatus').innerHTML = `📊 ${direction.toUpperCase()} Trade • ${amount} USDT at risk`;
+                document.getElementById('highBtn').classList.add('btn-disabled');
+                document.getElementById('lowBtn').classList.add('btn-disabled');
+                
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    tradeTimeLeft--;
+                    updateTimerDisplay();
+                    
+                    if (tradeTimeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        finalizeTrade();
+                    }
+                }, 1000);
+            });
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(tradeTimeLeft / 60);
+            const seconds = tradeTimeLeft % 60;
+            document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function checkTradeResult() {
+            if (!tradeActive || tradeEndPrice) return;
+            tradeEndPrice = currentPrice;
+        }
+
+        function finalizeTrade() {
+            if (!tradeActive) return;
+            
+            const entryPrice = chartData[chartData.length - 2] || currentPrice;
+            const exitPrice = currentPrice;
+            let won = false;
+            
+            if (tradeDirection === 'high') {
+                won = exitPrice > entryPrice;
+            } else {
+                won = exitPrice < entryPrice;
+            }
+            
+            let winAmount = 0;
+            let result = 'loss';
+            
+            if (won) {
+                winAmount = tradeAmount * 1.85; // 85% payout
+                users[currentUser].balance += winAmount;
+                result = 'win';
+            }
+            
+            saveUserData();
+            
+            // Add to history
+            users[currentUser].history.unshift({
+                date: new Date().toLocaleTimeString(),
+                direction: tradeDirection,
+                amount: tradeAmount,
+                result: result,
+                payout: winAmount,
+                entryPrice: entryPrice.toFixed(2),
+                exitPrice: exitPrice.toFixed(2)
+            });
+            if (users[currentUser].history.length > 20) users[currentUser].history.pop();
+            saveUserData();
+            renderHistory();
+            
+            // Show result
+            if (won) {
+                document.getElementById('tradeStatus').innerHTML = `🎉 WIN! +${winAmount.toFixed(2)} USDT`;
+                document.getElementById('timer').style.color = '#00c853';
+                setTimeout(() => {
+                    document.getElementById('timer').style.color = '#f0b90b';
+                }, 2000);
+            } else {
+                document.getElementById('tradeStatus').innerHTML = `💀 LOSS! -${tradeAmount.toFixed(2)} USDT`;
+                document.getElementById('timer').style.color = '#ff3b30';
+                setTimeout(() => {
+                    document.getElementById('timer').style.color = '#f0b90b';
+                }, 2000);
+            }
+            
+            // Reset trade
+            tradeActive = false;
+            tradeEndPrice = null;
+            
+            if (marketOpen) {
+                document.getElementById('highBtn').classList.remove('btn-disabled');
+                document.getElementById('lowBtn').classList.remove('btn-disabled');
+            }
+            
+            updateProfitBadge();
+            
+            setTimeout(() => {
+                if (!tradeActive) {
+                    document.getElementById('tradeStatus').innerHTML = marketOpen ? '💰 Place your trade' : '🔒 Market is closed';
+                }
+            }, 3000);
+        }
+
+        function renderHistory() {
+            const history = users[currentUser]?.history || [];
+            const container = document.getElementById('historyList');
+            
+            if (history.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #8a92b0; padding: 20px;">No trades yet</div>';
+                return;
+            }
+            
+            container.innerHTML = history.map(h => `
+                <div class="history-item">
+                    <div>
+                        <div style="font-weight: bold;">${h.direction === 'high' ? '📈 HIGH' : '📉 LOW'}</div>
+                        <div style="font-size: 10px; color: #8a92b0;">${h.date}</div>
+                    </div>
+                    <div>
+                        <div>${h.amount} USDT</div>
+                        <div class="${h.result === 'win' ? 'history-result-win' : 'history-result-loss'}">
+                            ${h.result === 'win' ? `+${h.payout.toFixed(2)}` : `-${h.amount.toFixed(2)}`}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.addEventListener('resize', () => drawChart());
+        setInterval(() => {
+            if (chartCanvas) drawChart();
+        }, 100);
+    </script>
+</body>
+</html>
