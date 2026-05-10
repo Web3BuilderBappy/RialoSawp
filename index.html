@@ -96,8 +96,8 @@ html,body{background:var(--bg);color:var(--txt);font-family:var(--sans);min-heig
 @keyframes mdp{0%,100%{box-shadow:0 0 0 0 rgba(0,230,118,.5)}70%{box-shadow:0 0 0 6px transparent}}
 
 /* CHART */
-.chart-wrap{position:relative;background:#07090f;border-bottom:1px solid var(--brd);flex-shrink:0;height:240px;overflow:hidden}
-#chartCv{display:block;width:100%;height:240px}
+.chart-wrap{position:relative;background:#07090f;border-bottom:1px solid var(--brd);flex-shrink:0;height:320px;overflow:hidden}
+#chartCv{display:block;width:100%;height:320px}
 .chart-closed-ov{position:absolute;inset:0;background:rgba(7,8,13,.9);display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;backdrop-filter:blur(6px)}
 .chart-closed-ov.on{display:flex}
 .cco-txt{font-family:var(--mono);font-size:12px;color:var(--dim);letter-spacing:3px;text-transform:uppercase}
@@ -560,6 +560,7 @@ let currentAsset=ASSETS[0],currentPrice=ASSETS[0].base;
 let priceHistory=[],chartTimer=null,adminDirection='none';
 let candleSeconds=0,currentCandle={o:0,h:0,l:0,c:0};
 let entryMarkers=[];
+let candleDuration=30; // seconds per candle, changes with TF button
 
 const cv=document.getElementById('chartCv');
 const ctx=cv.getContext('2d');
@@ -686,34 +687,52 @@ function fp(p){return p.toFixed(currentAsset.prec);}
 function initChart(){
   resizeCv();priceHistory=[];
   let p=currentAsset.base;
+  let trend=(Math.random()>0.5?1:-1)*0.25;
+  const vol=currentAsset.base*0.0006;
   for(let i=0;i<55;i++){
-    const chg=p*(Math.random()*.006-.003);
-    const o=p,c=p+chg;
-    const h=Math.max(o,c)+Math.abs(chg)*(0.3+Math.random()*.5);
-    const l=Math.min(o,c)-Math.abs(chg)*(0.3+Math.random()*.5);
-    priceHistory.push({o,h,l,c});p=c;
+    if(Math.random()<0.12) trend*=-1;
+    const o=p;
+    let hi=o,lo=o,c=o;
+    for(let s=0;s<16;s++){
+      const mv=(Math.random()-0.5+trend*0.12)*vol;
+      c+=mv;hi=Math.max(hi,c);lo=Math.min(lo,c);
+    }
+    const body=Math.abs(c-o)||vol*0.1;
+    hi+=body*(0.25+Math.random()*0.55);
+    lo-=body*(0.25+Math.random()*0.55);
+    priceHistory.push({o,h:hi,l:lo,c});
+    p=c;
   }
-  currentPrice=p;currentCandle={o:p,h:p,l:p,c:p};candleSeconds=0;drawChart();
+  currentPrice=p;
+  currentCandle={o:p,h:p,l:p,c:p};
+  candleSeconds=0;
+  drawChart();
 }
 
 function startChart(){
   if(chartTimer)clearInterval(chartTimer);
-  chartTimer=setInterval(tickChart,400);
+  chartTimer=setInterval(tickChart,800);
 }
 
 function tickChart(){
-  candleSeconds+=0.4;
+  candleSeconds+=0.8;
   let bias=0;
-  if(adminDirection==='up')bias=0.55;
-  else if(adminDirection==='down')bias=-0.55;
-  const vol=currentPrice*0.0012;
+  if(adminDirection==='up')bias=0.22;
+  else if(adminDirection==='down')bias=-0.22;
+
+  // Volatility scales with candle duration (longer TF = bigger moves per tick)
+  const vol=currentPrice*0.00035*(candleDuration/30);
   const move=(Math.random()-0.5+bias)*vol;
   currentPrice=Math.max(currentPrice+move,0.0001);
   currentCandle.c=currentPrice;
   currentCandle.h=Math.max(currentCandle.h,currentPrice);
   currentCandle.l=Math.min(currentCandle.l,currentPrice);
 
-  if(candleSeconds>=30){
+  if(candleSeconds>=candleDuration){
+    // Close candle: add realistic wick beyond body
+    const bodyH=Math.abs(currentCandle.c-currentCandle.o)||currentPrice*0.0001;
+    currentCandle.h+=bodyH*(0.05+Math.random()*0.15);
+    currentCandle.l-=bodyH*(0.05+Math.random()*0.15);
     priceHistory.push({...currentCandle});
     if(priceHistory.length>80)priceHistory.shift();
     currentCandle={o:currentPrice,h:currentPrice,l:currentPrice,c:currentPrice};
@@ -733,111 +752,125 @@ function tickChart(){
 function drawChart(){
   const W=cv.width/DPR,H=cv.height/DPR;
   ctx.save();ctx.scale(DPR,DPR);
-
-  // Background
   ctx.fillStyle='#07090f';ctx.fillRect(0,0,W,H);
 
   const all=[...priceHistory,currentCandle];
   if(all.length<2){ctx.restore();return;}
 
-  const ML=4,MR=52,MT=12,MB=20;
+  const ML=4,MR=58,MT=14,MB=24;
   const gw=W-ML-MR,gh=H-MT-MB;
-  const allP=all.flatMap(c=>[c.h,c.l]);
+
+  // Show only 30 candles → each candle bigger & clearer
+  const maxVis=Math.min(all.length,30);
+  const vis=all.slice(all.length-maxVis);
+
+  const allP=vis.flatMap(c=>[c.h,c.l]);
   const minP=Math.min(...allP),maxP=Math.max(...allP);
   const pad=(maxP-minP)*0.1;
   const lo=minP-pad,hi=maxP+pad,range=hi-lo||1;
   const toY=p=>MT+gh*(1-(p-lo)/range);
-  const slotW=gw/all.length;
-  const bodyW=Math.max(2,slotW*0.6);
-  const cx2i=i=>ML+i*slotW+slotW/2;
 
-  // Grid
-  ctx.strokeStyle='rgba(255,255,255,.035)';ctx.lineWidth=1;
+  const slotW=gw/maxVis;
+  // Bigger body: 68% of slot, min 4px
+  const bodyW=Math.max(4,Math.floor(slotW*0.68));
+  const wickW=Math.max(1.5, bodyW*0.15);
+
+  // Grid lines
+  ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
   for(let i=0;i<=5;i++){
-    const y=MT+gh*(i/5);
+    const y=Math.round(MT+gh*(i/5))+0.5;
     ctx.beginPath();ctx.moveTo(ML,y);ctx.lineTo(W-MR,y);ctx.stroke();
     const pv=hi-((hi-lo)*(i/5));
-    ctx.fillStyle='rgba(107,122,153,.45)';
-    ctx.font='8px JetBrains Mono';ctx.textAlign='left';
-    ctx.fillText(fp(pv),W-MR+4,y+3.5);
+    ctx.fillStyle='rgba(130,145,175,.6)';
+    ctx.font='9px JetBrains Mono';ctx.textAlign='left';
+    ctx.fillText(fp(pv),W-MR+4,y+4);
   }
 
-  // Candles — HD crisp
-  all.forEach((c,i)=>{
-    const isLast=i===all.length-1;
+  // Candles
+  vis.forEach((c,i)=>{
+    const isLast=i===vis.length-1;
     const isUp=c.c>=c.o;
-    const bullC='#00e676',bearC='#ff1744';
-    const bullD='#009944',bearD='#aa1030';
-    const col=isUp?bullC:bearC;
-    const colDim=isUp?bullD:bearD;
-    const cx=cx2i(i);
 
-    // Wick — pixel-crisp: snap to 0.5
-    const wx=Math.round(cx)+0.5;
-    ctx.strokeStyle=isLast?col:colDim;
-    ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(wx,Math.round(toY(c.h)));ctx.lineTo(wx,Math.round(toY(c.l)));ctx.stroke();
+    // Bright, clear colors
+    const BULL='#089981', BEAR='#f23645';
+    const BULL_DIM='#067d6b', BEAR_DIM='#c02836';
+    const col=isUp?(isLast?BULL:BULL_DIM):(isLast?BEAR:BEAR_DIM);
 
-    // Body
-    const bTop=Math.round(toY(Math.max(c.o,c.c)));
-    const bBot=Math.round(toY(Math.min(c.o,c.c)));
-    const bH=Math.max(2,bBot-bTop);
-    const bX=Math.round(cx-bodyW/2);
+    const cx=ML+i*slotW+slotW/2;
+    const cxR=Math.round(cx);
 
-    if(isLast){ctx.shadowColor=col;ctx.shadowBlur=14;}
-    // Crisp gradient body
-    const grad=ctx.createLinearGradient(bX,bTop,bX,bTop+bH);
-    if(isUp){grad.addColorStop(0,'#00e676');grad.addColorStop(1,'#00b248');}
-    else{grad.addColorStop(0,'#ff1744');grad.addColorStop(1,'#cc1030');}
-    ctx.fillStyle=isLast?col:grad;
-    ctx.fillRect(bX,bTop,Math.round(bodyW),bH);
+    const yH=Math.round(toY(c.h));
+    const yL=Math.round(toY(c.l));
+    const yO=Math.round(toY(c.o));
+    const yC=Math.round(toY(c.c));
+    const bodyTop=Math.min(yO,yC);
+    const bodyBot=Math.max(yO,yC);
+    const bH=Math.max(2,bodyBot-bodyTop);
+    const bX=cxR-Math.floor(bodyW/2);
+
+    // Wick — thicker for visibility
+    ctx.strokeStyle=col;
+    ctx.lineWidth=Math.max(1.5, wickW);
+    if(yH<bodyTop){
+      ctx.beginPath();ctx.moveTo(cxR,yH);ctx.lineTo(cxR,bodyTop);ctx.stroke();
+    }
+    if(yL>bodyBot){
+      ctx.beginPath();ctx.moveTo(cxR,bodyBot);ctx.lineTo(cxR,yL);ctx.stroke();
+    }
+
+    // Body — solid fill, glow on last
+    if(isLast){ctx.shadowColor=col;ctx.shadowBlur=16;}
+    ctx.fillStyle=col;
+    ctx.fillRect(bX,bodyTop,bodyW,bH);
     ctx.shadowBlur=0;
+
+    // Doji
+    if(bH<=2){
+      ctx.strokeStyle=col;ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(bX,bodyTop+1);ctx.lineTo(bX+bodyW,bodyTop+1);ctx.stroke();
+    }
   });
 
-  // Entry markers (Quotex style)
+  // Entry markers
   entryMarkers.forEach(m=>{
+    const visIdx=m.ci-(all.length-maxVis);
+    if(visIdx<0||visIdx>=maxVis)return;
     const entryY=toY(m.price);
-    const entryX=cx2i(Math.min(m.ci,all.length-1));
+    const entryX=ML+visIdx*slotW+slotW/2;
     const isUp=m.dir==='UP';
     const col=isUp?'#00e676':'#ff1744';
 
-    // Dashed line from entry to right edge
-    ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.setLineDash([4,3]);ctx.globalAlpha=.65;
+    ctx.strokeStyle=col;ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.globalAlpha=.55;
     ctx.beginPath();ctx.moveTo(entryX,entryY);ctx.lineTo(W-MR,entryY);ctx.stroke();
     ctx.setLineDash([]);ctx.globalAlpha=1;
 
-    // Arrow at entry point (Quotex triangle)
     ctx.fillStyle=col;
-    const ay=entryY,ax=entryX;
-    if(isUp){
-      ctx.beginPath();ctx.moveTo(ax,ay-16);ctx.lineTo(ax-7,ay-5);ctx.lineTo(ax+7,ay-5);ctx.closePath();ctx.fill();
-    } else {
-      ctx.beginPath();ctx.moveTo(ax,ay+16);ctx.lineTo(ax-7,ay+5);ctx.lineTo(ax+7,ay+5);ctx.closePath();ctx.fill();
-    }
+    if(isUp){ctx.beginPath();ctx.moveTo(entryX,entryY-14);ctx.lineTo(entryX-6,entryY-4);ctx.lineTo(entryX+6,entryY-4);ctx.closePath();ctx.fill();}
+    else{ctx.beginPath();ctx.moveTo(entryX,entryY+14);ctx.lineTo(entryX-6,entryY+4);ctx.lineTo(entryX+6,entryY+4);ctx.closePath();ctx.fill();}
 
-    // Right price badge
-    const lbl=fp(m.price);
-    const bw=MR-3,bh=16,bx=W-MR+2,by=entryY-bh/2;
-    ctx.globalAlpha=.85;
-    ctx.fillStyle=isUp?'rgba(0,230,118,.18)':'rgba(255,23,68,.18)';
-    ctx.beginPath();ctx.roundRect(bx,by,bw,bh,3);ctx.fill();
-    ctx.fillStyle=col;ctx.font='bold 7.5px JetBrains Mono';ctx.textAlign='center';
-    ctx.fillText(lbl,bx+bw/2,by+11);
+    const bw2=MR-4,bh2=14,bx2=W-MR+2,by2=entryY-bh2/2;
+    ctx.globalAlpha=.8;
+    ctx.fillStyle=isUp?'rgba(0,230,118,.15)':'rgba(255,23,68,.15)';
+    ctx.beginPath();ctx.roundRect(bx2,by2,bw2,bh2,3);ctx.fill();
+    ctx.fillStyle=col;ctx.font='bold 7px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText(fp(m.price),bx2+bw2/2,by2+10);
     ctx.globalAlpha=1;
   });
 
   // Current price dashed line
   const pY=Math.round(toY(currentPrice))+0.5;
-  ctx.strokeStyle='rgba(255,255,255,.22)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  const isUpNow=priceHistory.length>0?currentPrice>=priceHistory[0].o:true;
+  ctx.strokeStyle=isUpNow?'rgba(8,153,129,.5)':'rgba(242,54,69,.5)';
+  ctx.lineWidth=1;ctx.setLineDash([5,4]);
   ctx.beginPath();ctx.moveTo(ML,pY);ctx.lineTo(W-MR,pY);ctx.stroke();
   ctx.setLineDash([]);
 
-  // Current price badge (right)
-  const pbw=MR-2,pbh=18,pbx=W-MR+1,pby=pY-pbh/2;
-  ctx.fillStyle='rgba(68,138,255,.88)';
-  ctx.beginPath();ctx.roundRect(pbx,pby,pbw,pbh,3);ctx.fill();
-  ctx.fillStyle='#fff';ctx.font='bold 8px JetBrains Mono';ctx.textAlign='center';
-  ctx.fillText(fp(currentPrice),pbx+pbw/2,pby+12);
+  // Price badge — bigger and clear
+  const pbw=MR-2,pbh=20,pbx=W-MR+1,pby=pY-pbh/2;
+  ctx.fillStyle=isUpNow?'#089981':'#f23645';
+  ctx.beginPath();ctx.roundRect(pbx,pby,pbw,pbh,4);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='bold 9px JetBrains Mono';ctx.textAlign='center';
+  ctx.fillText(fp(currentPrice),pbx+pbw/2,pby+13);
 
   ctx.restore();
 }
@@ -845,7 +878,7 @@ function drawChart(){
 function resizeCv(){
   const wrap=document.querySelector('.chart-wrap');
   DPR=window.devicePixelRatio||1;
-  const w=wrap.offsetWidth,h=240;
+  const w=wrap.offsetWidth,h=320;
   cv.width=Math.round(w*DPR);cv.height=Math.round(h*DPR);
   cv.style.width=w+'px';cv.style.height=h+'px';
   ctx.setTransform(1,0,0,1,0,0);
@@ -853,7 +886,34 @@ function resizeCv(){
 window.addEventListener('resize',()=>{resizeCv();drawChart();});
 
 // TRADE CONTROLS
-window.setTF=(el,sec)=>{document.querySelectorAll('.tf-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');};
+window.setTF=(el,sec)=>{
+  document.querySelectorAll('.tf-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  candleDuration=sec;
+  priceHistory=[];
+  entryMarkers=[];
+  currentCandle={o:currentPrice,h:currentPrice,l:currentPrice,c:currentPrice};
+  candleSeconds=0;
+  // Reseed history for new timeframe
+  let p=currentPrice;
+  const vol=currentAsset.base*0.0005*Math.sqrt(sec/30);
+  for(let i=0;i<55;i++){
+    const moves=Math.max(3,Math.floor(sec/10));
+    let o=p,hi=p,lo=p,c=p;
+    for(let m=0;m<moves;m++){
+      const mv=(Math.random()-0.5)*vol;
+      c+=mv;hi=Math.max(hi,c);lo=Math.min(lo,c);
+    }
+    // Add realistic wicks
+    const bodySize=Math.abs(c-o);
+    hi+=bodySize*(0.2+Math.random()*0.6);
+    lo-=bodySize*(0.2+Math.random()*0.6);
+    priceHistory.push({o,h:hi,l:lo,c});
+    p=c;
+  }
+  currentPrice=p;
+  drawChart();
+};;
 window.setDur=(el,sec)=>{document.querySelectorAll('.dur-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');tradeDuration=sec;updPotential();};
 window.chgAmt=d=>{const inp=document.getElementById('amtInp');let v=(parseFloat(inp.value)||0)+d;v=Math.max(1,Math.min(bal,v));inp.value=v;updPotential();};
 window.setAmt=v=>{document.getElementById('amtInp').value=Math.min(v,bal);updPotential();};
@@ -894,20 +954,35 @@ function checkActiveTrades(){
   const now=Date.now(),settled=[];
   activeTrades.forEach(t=>{
     if(now<t.endTime)return;
-    // Correct logic: compare current close price vs entry price
-    const priceWentUp=currentPrice>t.startPrice;
+
+    // ── BINARY OPTION LOGIC (Quotex style) ──
+    // closePrice = current price at expiry time
+    const closePrice=currentPrice;
+    const entryPrice=t.startPrice;
+
+    // Pure result: did price go UP or DOWN from entry?
+    const priceClosedAbove=closePrice>entryPrice;
+    const priceClosedBelow=closePrice<entryPrice;
+    const tie=closePrice===entryPrice; // exact tie = loss (house rule)
+
     let won=false;
-    if(adminDirection==='up')      won=(t.dir==='UP');
-    else if(adminDirection==='down') won=(t.dir==='DOWN');
-    else {
-      // Real direction + house edge
-      const correct=(t.dir==='UP'&&priceWentUp)||(t.dir==='DOWN'&&!priceWentUp);
-      won=correct?Math.random()>0.12:Math.random()>0.80;
+    if(adminDirection==='up'){
+      // Admin forced UP → CALL wins
+      won=(t.dir==='UP');
+    } else if(adminDirection==='down'){
+      // Admin forced DOWN → PUT wins
+      won=(t.dir==='DOWN');
+    } else {
+      // No admin direction → real price movement decides
+      if(tie) won=false;
+      else if(t.dir==='UP')  won=priceClosedAbove;
+      else if(t.dir==='DOWN') won=priceClosedBelow;
     }
+
     const payout=won?parseFloat((t.amount+t.amount*t.profit/100).toFixed(2)):0;
     if(won){bal+=payout;if(users[CU])users[CU].wins=(users[CU].wins||0)+1;}
     else{if(users[CU])users[CU].losses=(users[CU].losses||0)+1;}
-    tradeHistory.unshift({...t,won,payout,closePrice:currentPrice});
+    tradeHistory.unshift({...t,won,payout,closePrice});
     if(tradeHistory.length>50)tradeHistory.pop();
     settled.push(t.id);
     addTxn(won?'win':'loss',won?'Win: '+t.dir+' '+t.asset:'Loss: '+t.dir+' '+t.asset,won?payout:-t.amount);
@@ -930,23 +1005,36 @@ function renderActiveTrades(){
     const rem=Math.max(0,Math.ceil((t.endTime-Date.now())/1000));
     const prog=((t.duration-rem)/t.duration*100).toFixed(1);
     const isUp=t.dir==='UP';
+
+    // Binary status: is price currently in winning zone?
+    const winning=(isUp&&currentPrice>t.startPrice)||(!isUp&&currentPrice<t.startPrice);
+    const statusColor=winning?'var(--grn)':'var(--red)';
+    const statusTxt=winning?'WINNING':'LOSING';
+
     const arr=isUp
       ?'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>'
       :'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>';
+
+    const priceDiff=currentPrice-t.startPrice;
+    const diffSign=priceDiff>=0?'+':'';
+
     return `<div class="trade-card" id="tc-${t.id}">
       <div class="tc-row1">
         <div class="tc-asset">${t.asset}</div>
-        <div class="tc-dir ${isUp?'up':'dn'}">${arr} ${t.dir}</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:${statusColor};background:${winning?'rgba(0,230,118,.08)':'rgba(255,23,68,.08)'};padding:2px 8px;border-radius:6px;border:1px solid ${winning?'rgba(0,230,118,.2)':'rgba(255,23,68,.2)'}">${statusTxt}</div>
+          <div class="tc-dir ${isUp?'up':'dn'}">${arr} ${t.dir}</div>
+        </div>
       </div>
       <div class="tc-row2">
         <div class="tc-meta">
           <div><div class="tc-meta-lbl">Amount</div><div class="tc-meta-val">$${t.amount.toFixed(2)}</div></div>
-          <div><div class="tc-meta-lbl">Profit</div><div class="tc-meta-val" style="color:var(--grn)">${t.profit}%</div></div>
           <div><div class="tc-meta-lbl">Entry</div><div class="tc-meta-val">${fp(t.startPrice)}</div></div>
+          <div><div class="tc-meta-lbl">Now</div><div class="tc-meta-val" style="color:${statusColor}">${fp(currentPrice)}</div></div>
         </div>
         <div class="tc-timer" id="timer-${t.id}">${rem}s</div>
       </div>
-      <div class="tc-prog-wrap"><div class="tc-prog-fill" id="prog-${t.id}" style="width:${prog}%"></div></div>
+      <div class="tc-prog-wrap"><div class="tc-prog-fill" id="prog-${t.id}" style="width:${prog}%;background:${statusColor}"></div></div>
     </div>`;
   }).join('');
 }
@@ -955,8 +1043,15 @@ function updateTimers(){
   activeTrades.forEach(t=>{
     const rem=Math.max(0,Math.ceil((t.endTime-Date.now())/1000));
     const prog=((t.duration-rem)/t.duration*100).toFixed(1);
-    const te=document.getElementById('timer-'+t.id),pe=document.getElementById('prog-'+t.id);
-    if(te)te.textContent=rem+'s';if(pe)pe.style.width=prog+'%';
+    const isUp=t.dir==='UP';
+    const winning=(isUp&&currentPrice>t.startPrice)||(!isUp&&currentPrice<t.startPrice);
+    const statusColor=winning?'var(--grn)':'var(--red)';
+    const te=document.getElementById('timer-'+t.id);
+    const pe=document.getElementById('prog-'+t.id);
+    if(te)te.textContent=rem+'s';
+    if(pe){pe.style.width=prog+'%';pe.style.background=statusColor;}
+    // Re-render card every few seconds to update WINNING/LOSING + current price
+    if(rem%3===0) renderActiveTrades();
   });
 }
 
